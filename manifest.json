@@ -1,0 +1,21 @@
+{
+	"manifest_version": 2,
+	
+	"name": "Miracle Music Player",
+	"version": "0.0.1",
+	"description": "Search and play music instanly",
+	
+	"permissions": [],
+	
+	"browser_action": {
+		"default_popup": "templates/popup.html",
+		"default_icon": "images/icon-38.png"
+	},
+	
+	"icons": {
+		"16": "images/icon-16.png",
+		"19": "images/icon-19.pngs",
+		"38": "images/icon-38.png",
+		"128": "images/icon-128.png"
+	}	
+}
