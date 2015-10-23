@@ -12,10 +12,15 @@
 		"default_icon": "images/icon-38.png"
 	},
 	
+	"permissions": [
+    	"webRequest"
+  	],
+	
 	"icons": {
 		"16": "images/icon-16.png",
 		"19": "images/icon-19.pngs",
 		"38": "images/icon-38.png",
 		"128": "images/icon-128.png"
-	}	
+	},
+	  "content_security_policy": "script-src 'self' 'unsafe-eval' https://s.ytimg.com/yts/jsbin/ https://www.youtube.com/ https://ssl.google-analytics.com/ http://localhost; object-src 'self'"
 }
