@@ -8,12 +8,15 @@ require.config({
 		text: "../text",
 		songModel: "../common/song",
 		playlist: "module/playlist",
-		player: "module/player"
+		player: "module/player",
+		moment: "../moment.min"
 	}
 });
 
 require(['jquery', 'flatui', 'songModel', 'views/popup', 'playlist', 'player'], function($, $_, Song, PopupView, Playlist, Player){
 	
-	
-	var MainView = new PopupView();
+	var Counter = Backbone.Model.extend({
+		time: 0
+	});
+	var MainView = new PopupView({model: new Counter({ time: 0 })});
 });
