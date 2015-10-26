@@ -9,7 +9,7 @@
 	
 	"permissions": ["http://*.mp3.zing.vn/**/*", "<all_urls>", "tabs"],
 	
-	"background": {"page": "templates/background.html"},
+	"background": {"page": "templates/background.html", "script": "scripts/background/background_main.js"},
 	
 	"browser_action": {
 		"default_popup": "templates/popup.html",
