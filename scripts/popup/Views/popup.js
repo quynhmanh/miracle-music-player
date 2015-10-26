@@ -56,6 +56,10 @@ define(['underscore',
 				success: function(data){
 					var searchList =  $('#search-list');
 					searchList.empty();
+					if (data.length === 0){
+						searchList.append("<li>Try again</li>");
+						searchList.append("<li>Tips: Searching with both name and artist of the song</li>");
+					}
 					for (var i = 0; i < data.length; ++i){
 						if (i > 8) break;
 						var left = data[i]['Title'].indexOf('/');

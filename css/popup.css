@@ -131,6 +131,7 @@ body {
 
 #slider {
 	width: 100%;
+	margin-top: 10px;
 }
 
 #slider > a {
@@ -138,7 +139,7 @@ body {
 }
 
 #slider > div {
-	background-color: white;
+	background-color: #22313F;
 }
 
 #btn-play, #btn-pause {
@@ -159,7 +160,7 @@ body {
 }
 
 #player {
-	padding: 20px;
+	padding: 10px 20px;
 	background-color: darkcyan;
 }
 
@@ -186,6 +187,13 @@ body {
 	font-size: 15px;
 	margin: 0;
 	padding-left: 0px;
+}
+
+#search-box > ul > li {
+	padding-top: 10px;
+	font-size: 16px;
+	text-align: center;
+	color: white;
 }
 
 #search-box > ul > a > li {
