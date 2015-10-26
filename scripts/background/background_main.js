@@ -6,3 +6,4 @@ require.config({
 	}
 });
 
+var a = "Hello world!";

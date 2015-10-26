@@ -1,0 +1,16 @@
+body {
+	height: 300px;
+	width: 300px;
+}
+
+#btn-play, #btn-pause {
+	color: darkseagreen;
+	border: 0;
+	background-color: white;
+	font-size: 15px;
+	margin-bottom: 20px;
+}
+
+#btn-play:hover, #btn-pause:hover {
+	color: darkcyan;
+}
