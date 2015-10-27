@@ -55,7 +55,9 @@ define([
 		pauseCurrentSong: function(){
 			if (!this.get('source')) return undefined;
 			this.get('source').stop();
+			this.set('state', false);
 			clearInterval(interval);
+			console.log(this.get('state'));
 		}
 	});
 	

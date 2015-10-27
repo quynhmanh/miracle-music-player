@@ -112,32 +112,34 @@
 }
 
 body {
-	height: 480px;
 	width: 350px;
 	padding: 0;
 	margin: 0;
 	font-family: 'Roboto Condensed', sans-serif;
+	color: #DADFE1;
+}
+
+#header {
+	margin: 5px 10px;
 }
 
 #title {
-	width: 100%;
-	text-align: center;
-	color: cadetblue;
-	margin: 0;
-	padding: 5px 0;
+	width: 95%;
+	color: #6C7A89;
 	font-size: 14px;
-	border-bottom: 1px solid cadetblue;
+	margin: 0px;
+	padding-top: 3px;
 }
 
 #song-title {
-	color: white;
-	font-size: 13px;
-	text-align: right;
+	font-size: 14px;
+	display: inline;
 }
 
 #slider {
 	width: 100%;
 	margin-top: 10px;
+	background: #ECECEC;
 }
 
 #slider > a {
@@ -145,15 +147,20 @@ body {
 }
 
 #slider > div {
-	background-color: #22313F;
+	background-color: #3498db;
+}
+
+#slider > a {
+	background-color: #6C7A89;
 }
 
 
 #btn-play, #btn-pause {
-	color: white;
+	color: #6C7A89;
 	border: 0;
-	background-color: darkcyan;
-	font-size: 15px;
+	background-color: #DADFE1;
+	font-size: 22px;
+	margin-left: 146px;
 }
 
 #btn-play:hover, #btn-pause:hover {
@@ -162,14 +169,19 @@ body {
 
 #time {
 	float: right;
-	font-size: 13px;
-	color: white;
+	font-size: 14px;
+	margin-top: 5px;
 }
 
 #player {
+	margin: 4px 2px;
 	padding: 5px 20px;
-	background-color: darkcyan;
-	height: 100px;
+	background-color: #DADFE1;
+	height: 110px;
+	color: #6C7A89;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.45);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.45);
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.45);
 }
 
 #search-query-3 {
@@ -186,8 +198,9 @@ body {
 }
 
 #search-box {
-	background-color: darkcyan;
+	background-color: #DADFE1;
 	height: 323px;
+	color: #DADFE1;
 }
 
 #search-box > ul {
@@ -201,23 +214,24 @@ body {
 	padding-top: 10px;
 	font-size: 16px;
 	text-align: center;
-	color: white;
+	color: #6C7A89;
 }
 
 #search-box > ul > a > li {
 	padding: 0;
 	padding: 0 10px;
 	line-height: 35px;
-	color: white;
 	width: 100%;
 	border-bottom: 1px solid white;
+	color: #6C7A89;
 }
 
 #search-box > ul > a > li > span {
 	float: right;
 	margin: 0;
 	font-size: 12px;
-	margin-right: 3px;
+	margin-right: 8px;
+	color: #6C7A89;
 }
 
 #search-box > ul > a > li > img {
@@ -228,9 +242,15 @@ body {
 }
 
 #search-box > ul > a > li:hover {
-	background-color: cadetblue;
+	background-color: #ecf0f1;
 }
 
 #search-box > ul > a:nth-child(9) > li {
 	border-bottom: none;
+}
+
+#btn-search {
+	padding-top: 10px;
+	margin-left: 120px;
+	color: #6C7A89;
 }

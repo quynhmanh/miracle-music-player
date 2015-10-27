@@ -10,7 +10,8 @@ define(['underscore',
 		popupTemplate: _.template(Html),
 		
 		events: {
-			"click #btn-play" : "togglePlayAndPause",
+			"click .fui-play" : "onResume",
+			"click .fui-pause" : "onPause",
 			"change #search-query-3": "searchQuery",
 			"click .musicSearch": "selectSong"
 		},
@@ -32,6 +33,12 @@ define(['underscore',
 			
 			$('#slider', this.el).slider({
 				min: 0, max: 100, value: 0, range: "min"
+			});
+			
+			$('#search-area').hide();
+			
+			$('#btn-search').click(function(){
+				$('#search-area').slideToggle();
 			});
 		},
 		
@@ -125,10 +132,21 @@ define(['underscore',
 		
 		togglePlayAndPause: function(s){
 			var button = $('#btn-play', this.el);
-			if (s)
+			if (s == "pause")
 				button.removeClass('fui-play').addClass('fui-pause');
 			else 
 				button.removeClass('fui-pause').addClass('fui-play');
+		},
+		
+		onPause: function(){
+			var bg = chrome.extension.getBackgroundPage();
+			bg.player.pauseCurrentSong();
+		},
+		
+		onResume: function(){
+			var bg = chrome.extension.getBackgroundPage();
+			if (!bg.player.get('currentSong')) return;
+			bg.player.playCurrentSong();
 		}
 	});
 	return PopupView;
