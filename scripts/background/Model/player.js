@@ -1,6 +1,7 @@
 define([
-	'backbone'
-], function(Backbone){
+	'backbone',
+	'song',
+], function(Backbone, Song){
 	
 	var Player = Backbone.Model.extend({
 		defaults: {
@@ -13,11 +14,24 @@ define([
 		},
 		
 		initialize: function(){
+			var self = this;
 			window.AudioContext = window.AudioContext || window.webkitAudioContext;
 			window.context = new window.AudioContext();
 		},
 		
+		selectSong: function(data){
+			var self = this;
+			var song = new Song(data);
+			this.set('time', 0);
+			this.set('currentSong', song);
+			song.on('change', function(){
+				self.set('duration', song.get('buffer').duration);
+				self.playCurrentSong();
+			});
+		},
+		
 		playCurrentSong: function(){
+			console.log(1);
 			var self = this;
 			var song = this.get('currentSong');
 			var source = window.context.createBufferSource();

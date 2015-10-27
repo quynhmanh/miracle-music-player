@@ -10,15 +10,15 @@ define(['underscore',
 		popupTemplate: _.template(Html),
 		
 		events: {
-			"click .fui-play" : "playCurrentSong",
-			"click .fui-pause" : "pauseCurrentSong",
+			"click #btn-play" : "togglePlayAndPause",
 			"change #search-query-3": "searchQuery",
-			"click .musicSearch": "chooseSong"
+			"click .musicSearch": "selectSong"
 		},
 		
 		initialize: function(){
 			this.bg = chrome.extension.getBackgroundPage();
 			this.render();
+			console.log(this.bg.player);
 			this.bg.player.on('change', this.renderTime, this);
 			window.AudioContext = window.AudioContext || window.webkitAudioContext;
 			window.context = new window.AudioContext();
@@ -33,19 +33,15 @@ define(['underscore',
 			$('#slider', this.el).slider({
 				min: 0, max: 100, value: 0, range: "min"
 			});
-			
-			if (this.bg.player.get('state')){
-				$('#btn-play').removeClass('fui-play').addClass('fui-pause');
-			}
 		},
 		
 		renderTime: function(){
 			var time = this.bg.player.get('time');
 			var duration = this.bg.player.get('duration');
 			var song = this.bg.player.get('currentSong');
-			
+			var btn = this.bg.player.get('state');
 			if (time > duration){
-				this.pauseCurrentSong();
+				this.bg.player.pauseCurrentSong();
 				this.bg.player.set('time', 0);
 			}
 			
@@ -59,21 +55,18 @@ define(['underscore',
 			
 			if (song)
 				$('#song-title', this.el).html(song.get('Title') + ' - ' + song.get('Artist'));
+			
+			if (btn)
+				this.togglePlayAndPause("pause");
+			else 
+				this.togglePlayAndPause("play");
 		},
 		
-		chooseSong: function(e){
-			var self = this;
+		selectSong: function(e){
 			var nth = e.currentTarget.getAttribute('data-nth');
 			var data = this.searchList[nth];
-			var song = new Song(data);
 			var bg = chrome.extension.getBackgroundPage();
-			bg.player.set('time', 0);
-			self.pauseCurrentSong();
-			song.on('change :buffer', function(){
-				bg.player.set('duration', song.get('buffer').duration);
-				self.playCurrentSong();
-			});
-			bg.player.set('currentSong', song);
+			bg.player.selectSong(data);
 		},
 		
 		toPascalCase: function(str) {
@@ -130,18 +123,12 @@ define(['underscore',
 			this.searchMusic(query);
 		},
 		
-		playCurrentSong: function(){
-			var self = this;	
-			
-			if (!this.bg.player.get('currentSong').get('buffer')) return;
-			this.bg.player.playCurrentSong();
-			$('#btn-play', this.el).removeClass('fui-play').addClass('fui-pause');
-		},
-		
-		pauseCurrentSong: function(){
-			if (!this.bg.player.get('currentSong') || !this.bg.player.get('source')) return;
-			this.bg.player.pauseCurrentSong();
-			$('#btn-play', this.el).removeClass('fui-pause').addClass('fui-play');
+		togglePlayAndPause: function(s){
+			var button = $('#btn-play', this.el);
+			if (s)
+				button.removeClass('fui-play').addClass('fui-pause');
+			else 
+				button.removeClass('fui-pause').addClass('fui-play');
 		}
 	});
 	return PopupView;

@@ -1,13 +1,5 @@
 define(['backbone'], function(Backbone){
 	var Song = Backbone.Model.extend({
-		defaults: {
-			name: '',
-			artist: '',
-			url: '',
-			image: '',
-			buffer: null
-		},
-		
 		initialize: function(){
 			this.toBuffer(this.get('UrlJunDownload'));
 		},
