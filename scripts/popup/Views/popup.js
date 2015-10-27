@@ -44,6 +44,11 @@ define(['underscore',
 			var duration = this.bg.player.get('duration');
 			var song = this.bg.player.get('currentSong');
 			
+			if (time > duration){
+				this.pauseCurrentSong();
+				this.bg.player.set('time', 0);
+			}
+			
 			$('#time', this.el).html(
 				Moment().startOf('day').seconds(time).format('mm:ss')
 			);
@@ -51,8 +56,6 @@ define(['underscore',
 			$('#slider', this.el).slider({
 				value: time * 100 / duration
 			});
-			
-			console.log(song);
 			
 			if (song)
 				$('#song-title', this.el).html(song.get('Title') + ' - ' + song.get('Artist'));

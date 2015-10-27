@@ -35,13 +35,13 @@ define([
 				++currentTime;
 				self.set('time', currentTime);
 			}, 1000);
+			
 		},
 		
 		pauseCurrentSong: function(){
 			if (!this.get('source')) return undefined;
 			this.get('source').stop();
 			clearInterval(interval);
-			this.set('state', false);
 		}
 	});
 	
