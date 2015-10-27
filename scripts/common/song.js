@@ -9,8 +9,7 @@ define(['backbone'], function(Backbone){
 		},
 		
 		initialize: function(){
-			console.log(this.get('url'));
-			this.toBuffer(this.get('url'));
+			this.toBuffer(this.get('UrlJunDownload'));
 		},
 		
 		toBuffer: function(url){

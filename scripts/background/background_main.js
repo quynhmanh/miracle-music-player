@@ -9,14 +9,18 @@ require.config({
 });
 
 require([
+	'jquery',
 	'player',
 	'song'
-], function(Player, Song){
+], function($, Player, Song){
 	
-	var url = 'http://mp3.zing.vn/download/song/An-Nut-Nho-Tha-Giac-Mo-Son-Tung-M-TP/ZHJHykHNQBDShSZyZbxyvmLG';
 	
-	var song = new Song({url: url});
-	var player = new Player({currentSong: song});
+	window.player = new Player();
+		
+	window.addEventListener('online', function(){
+		chrome.runtime.reload();
+		return;
+	});
 	
-	console.log(player);
+	
 });

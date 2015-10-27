@@ -129,6 +129,12 @@ body {
 	border-bottom: 1px solid cadetblue;
 }
 
+#song-title {
+	color: white;
+	font-size: 13px;
+	text-align: right;
+}
+
 #slider {
 	width: 100%;
 	margin-top: 10px;
@@ -141,6 +147,7 @@ body {
 #slider > div {
 	background-color: #22313F;
 }
+
 
 #btn-play, #btn-pause {
 	color: white;
@@ -160,8 +167,9 @@ body {
 }
 
 #player {
-	padding: 10px 20px;
+	padding: 5px 20px;
 	background-color: darkcyan;
+	height: 100px;
 }
 
 #search-query-3 {

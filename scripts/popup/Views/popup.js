@@ -9,29 +9,68 @@ define(['underscore',
 	var PopupView = Backbone.View.extend({
 		popupTemplate: _.template(Html),
 		
+		events: {
+			"click .fui-play" : "playCurrentSong",
+			"click .fui-pause" : "pauseCurrentSong",
+			"change #search-query-3": "searchQuery",
+			"click .musicSearch": "chooseSong"
+		},
+		
+		initialize: function(){
+			this.bg = chrome.extension.getBackgroundPage();
+			this.render();
+			this.bg.player.on('change', this.renderTime, this);
+			window.AudioContext = window.AudioContext || window.webkitAudioContext;
+			window.context = new window.AudioContext();
+			this.renderTime();
+		},
+		
 		el: '#main-container',
 		
 		render: function(){
 			this.$el.html(this.popupTemplate());
+			
 			$('#slider', this.el).slider({
 				min: 0, max: 100, value: 0, range: "min"
 			});
+			
+			if (this.bg.player.get('state')){
+				$('#btn-play').removeClass('fui-play').addClass('fui-pause');
+			}
 		},
 		
 		renderTime: function(){
-			var self = this;
+			var time = this.bg.player.get('time');
+			var duration = this.bg.player.get('duration');
+			var song = this.bg.player.get('currentSong');
+			
 			$('#time', this.el).html(
-				Moment().startOf('day').seconds(this.model.get('time')).format('mm:ss')
+				Moment().startOf('day').seconds(time).format('mm:ss')
 			);
+			
 			$('#slider', this.el).slider({
-				value: self.model.get('time') * 100 / this.duration
+				value: time * 100 / duration
 			});
+			
+			console.log(song);
+			
+			if (song)
+				$('#song-title', this.el).html(song.get('Title') + ' - ' + song.get('Artist'));
 		},
 		
-		events: {
-			"click .fui-play" : "playCurrentSong",
-			"click .fui-pause" : "pauseCurrentSong",
-			"change #search-query-3": "searchQuery"
+		chooseSong: function(e){
+			var self = this;
+			var nth = e.currentTarget.getAttribute('data-nth');
+			var data = this.searchList[nth];
+			var song = new Song(data);
+			var bg = chrome.extension.getBackgroundPage();
+			bg.player.set('time', 0);
+			self.pauseCurrentSong();
+			song.on('change :buffer', function(){
+				bg.player.set('duration', song.get('buffer').duration);
+				self.playCurrentSong();
+			});
+			bg.player.set('currentSong', song);
 		},
 		
 		toPascalCase: function(str) {
@@ -47,13 +86,16 @@ define(['underscore',
 		},
 		
 		searchMusic: function(s){
+			var API = 'http://j.ginggong.com/jOut.ashx?h=mp3.zing.vn&code=';
+			var keyAPI = 'f55a079f-cff2-4969-a9dc-aa4b6e5029f5';
 			var self = this;
 			$.ajax({
 				context: this,
-				url: 'http://j.ginggong.com/jOut.ashx?h=mp3.zing.vn&code=f55a079f-cff2-4969-a9dc-aa4b6e5029f5',
+				url: API + keyAPI,
 				data: 'k=' + encodeURIComponent(s),
 				dataType: 'json',
 				success: function(data){
+					self.searchList = data;
 					var searchList =  $('#search-list');
 					searchList.empty();
 					if (data.length === 0){
@@ -62,17 +104,18 @@ define(['underscore',
 					}
 					for (var i = 0; i < data.length; ++i){
 						if (i > 8) break;
+						
 						var left = data[i]['Title'].indexOf('/');
 						var right = data[i]['Title'].indexOf('+');
 						if (left == -1) left = 0; else left++;
 						if (right == -1) right = data[i]['Title'].length - 1; else right--;
-						data[i]['Title'] = data[i]['Title'].substr(left, right - left + 1);
-						data[i]['Title'].replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '');
-						data[i]['Title'] = this.toPascalCase(data[i]['Title']);
-						searchList.append("<a href='#'><li>" +
-										    data[i]['Title'] + 
-										  	"<img src='" + data[i]['Avatar'] + "'</img>" +
-										  	"<span>" + data[i]['Artist'] + "</span>" +
+						
+						data[i]['Title'] = this.toPascalCase(data[i]['Title'].substr(left, right - left + 1)
+										.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, ''));
+						
+						searchList.append("<a href='#' class='musicSearch' data-nth='" + i + "'><li>" + data[i]['Title'] + 
+										  "<img src='" + data[i]['Avatar'] + "'</img>" +
+										  "<span>" + data[i]['Artist'] + "</span>" +
 										  "</li></a>");
 					}
 				}
@@ -84,35 +127,17 @@ define(['underscore',
 			this.searchMusic(query);
 		},
 		
-		initialize: function(){
-			this.render();
-			this.model.on('change', this.renderTime, this);
-		},
-		
 		playCurrentSong: function(){
-			var self = this;
-			var bg = chrome.extension.getBackgroundPage();
+			var self = this;	
 			
-			console.log(bg.player);
-			if (!bg.player.get('currentSong').get('buffer')) return;
-			
-			bg.player.playCurrentSong(this.model.get('time'));
-			this.duration = bg.player.get('duration');
-			console.log(this.duration);
-			var currentTime = this.model.get('time');
-			window.interval = setInterval(function(){
-				++currentTime;
-				console.log(currentTime);
-				self.model.set('time', currentTime);
-			}, 1000);
-			
+			if (!this.bg.player.get('currentSong').get('buffer')) return;
+			this.bg.player.playCurrentSong();
 			$('#btn-play', this.el).removeClass('fui-play').addClass('fui-pause');
 		},
 		
 		pauseCurrentSong: function(){
-			var bg = chrome.extension.getBackgroundPage();
-			bg.player.pauseCurrentSong();
-			clearInterval(interval);
+			if (!this.bg.player.get('currentSong') || !this.bg.player.get('source')) return;
+			this.bg.player.pauseCurrentSong();
 			$('#btn-play', this.el).removeClass('fui-pause').addClass('fui-play');
 		}
 	});
