@@ -4,7 +4,8 @@ require.config({
 		underscore: "../underscore-min",
 		backbone: "../backbone-min",
 		player: "model/player",
-		song: "../common/song"
+		song: "../common/song",
+		text: "../text"
 	}
 });
 
@@ -21,6 +22,7 @@ require([
 		chrome.runtime.reload();
 		return;
 	});
+	
 	
 	
 });

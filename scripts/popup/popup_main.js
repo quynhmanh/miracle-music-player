@@ -1,8 +1,8 @@
 require.config({
 	paths: {
-		jquery: "../jquery-2.1.4.min",
-		//jqueryui: "../jquery-ui.min",
-		flatui: "../flat-ui.min",
+		jquery: "../jquery-1.11.3",
+//		jqueryui: "../jquery-ui.min",
+		flatui: "../flat-ui",
 		underscore: "../underscore-min",
 		backbone: "../backbone-min",
 		text: "../text",
@@ -15,8 +15,6 @@ require.config({
 
 require(['jquery', 'flatui', 'songModel', 'views/popup', 'playlist', 'player'], function($, $_, Song, PopupView, Playlist, Player){
 	
-	var Counter = Backbone.Model.extend({
-		time: 0
-	});
-	var MainView = new PopupView({model: new Counter({ time: 0 })});
+	var MainView = new PopupView();
+	
 });

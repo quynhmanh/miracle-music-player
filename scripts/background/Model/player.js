@@ -1,63 +1,46 @@
 define([
 	'backbone',
 	'song',
-], function(Backbone, Song){
+	'text!/templates/background_template.html',
+	'jquery',
+	'underscore',
+	'../background/Views/invisible_view'
+], function(Backbone, Song, Html, $, _, inviView){
 	
 	var Player = Backbone.Model.extend({
 		defaults: {
-			slider: null,
 			currentSong: null,
-			duration: 0,
 			state: false,
-			source: null,
 			time: 0
 		},
 		
 		initialize: function(){
-			var self = this;
-			window.AudioContext = window.AudioContext || window.webkitAudioContext;
-			window.context = new window.AudioContext();
 		},
 		
 		selectSong: function(data){
-			var self = this;
 			var song = new Song(data);
-			this.set('time', 0);
 			this.set('currentSong', song);
-			song.on('change', function(){
-				self.set('duration', song.get('buffer').duration);
-				self.playCurrentSong();
-			});
+			this.audio = new Audio();
+			this.audio.src = data.UrlJunDownload;
+			return this;
 		},
 		
 		playCurrentSong: function(){
-			console.log(1);
+			console.log(this.audio);
 			var self = this;
-			var song = this.get('currentSong');
-			var source = window.context.createBufferSource();
-			var currentTime = this.get('time');
-			if (!song.get('buffer')) 
-				return;
+			this.set('state', true);
+			this.audio.play();
+			var currentTime = self.audio.currentTime;
 			console.log(currentTime);
-			source.buffer = song.get('buffer');
-			this.set('duration', source.buffer.duration);
-			source.connect(context.destination);
-			self.set('state', true);
-			self.set('source', source);
-			source.start(context.currentTime, currentTime);
 			interval = setInterval(function(){
 				++currentTime;
-				self.set('time', currentTime);
+				self.set('time', self.audio.currentTime);
 			}, 1000);
-			
 		},
 		
 		pauseCurrentSong: function(){
-			if (!this.get('source')) return undefined;
-			this.get('source').stop();
+			if (this.audio) this.audio.pause();
 			this.set('state', false);
-			clearInterval(interval);
-			console.log(this.get('state'));
 		}
 	});
 	

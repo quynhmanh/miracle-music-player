@@ -1,7 +1,7 @@
 define(['backbone'], function(Backbone){
 	var Song = Backbone.Model.extend({
 		initialize: function(){
-			this.toBuffer(this.get('UrlJunDownload'));
+			//this.toBuffer(this.get('UrlJunDownload'));
 		},
 		
 		toBuffer: function(url){

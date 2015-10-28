@@ -18,67 +18,80 @@ define(['underscore',
 		
 		initialize: function(){
 			this.bg = chrome.extension.getBackgroundPage();
-			this.render();
-			console.log(this.bg.player);
 			this.bg.player.on('change', this.renderTime, this);
-			window.AudioContext = window.AudioContext || window.webkitAudioContext;
-			window.context = new window.AudioContext();
+			this.render();
 			this.renderTime();
+			window.bg = this.bg;
 		},
 		
 		el: '#main-container',
 		
 		render: function(){
-			this.$el.html(this.popupTemplate());
-			
-			$('#slider', this.el).slider({
-				min: 0, max: 100, value: 0, range: "min"
+			var self = this;
+			this.$el.html(this.popupTemplate());	
+			$('#slider', this.el).slider({min: 0, max: 100, value: 0, range: "min",
+				change: function( event, ui ) {
+					if (event.altKey === false && self.bg.player.audio && self.bg.player.audio.duration){
+						self.bg.player.audio.currentTime = self.bg.player.audio.duration * ui.value / 100;
+						console.log(self.bg.player.audio.duration * ui.value / 100);
+					}
+				}							 
 			});
-			
 			$('#search-area').hide();
-			
 			$('#btn-search').click(function(){
 				$('#search-area').slideToggle();
 			});
 		},
 		
 		renderTime: function(){
-			var time = this.bg.player.get('time');
-			var duration = this.bg.player.get('duration');
-			var song = this.bg.player.get('currentSong');
-			var btn = this.bg.player.get('state');
-			if (time > duration){
-				this.bg.player.pauseCurrentSong();
-				this.bg.player.set('time', 0);
+			var duration = 0;
+			var time = 0;
+			var title = "Have fun ^_^!";
+			var player = this.bg.player;
+			
+			if (player.audio && player.audio.ended)
+				player.audio.timeCurrent = 0;
+			
+			if (player.audio && player.audio.duration !== NaN)
+				duration = player.audio.duration;
+			
+			if (player.audio)
+				time = player.audio.currentTime;
+			
+			if (player.get('currentSong'))
+				title = player.get('currentSong').get('Title') + ' - ' + player.get('currentSong').get('Artist');
+			
+			if (duration !== 0 && duration === time){
+				player.audio.currentTime = 0;
+				player.pauseCurrentSong();
 			}
 			
-			$('#time', this.el).html(
-				Moment().startOf('day').seconds(time).format('mm:ss')
-			);
+			if (duration !== 0)
+				$('#slider', this.el).slider({ value: time * 100 / duration });
 			
-			$('#slider', this.el).slider({
-				value: time * 100 / duration
-			});
+			if (player.audio && player.audio.ended)
+				$('#slider', this.el).slider({ value: time * 100 / duration });
 			
-			if (song)
-				$('#song-title', this.el).html(song.get('Title') + ' - ' + song.get('Artist'));
+			$('#time', this.el).html( Moment().startOf('day').seconds(time).format('mm:ss') );
 			
-			if (btn)
-				this.togglePlayAndPause("pause");
-			else 
-				this.togglePlayAndPause("play");
+			$('#song-title', this.el).html(title);
+			
+			if (player.get('state')) this.btnPause();
+			else this.btnPlay();
+			
 		},
 		
 		selectSong: function(e){
 			var nth = e.currentTarget.getAttribute('data-nth');
 			var data = this.searchList[nth];
 			var bg = chrome.extension.getBackgroundPage();
-			bg.player.selectSong(data);
+			bg.player.pauseCurrentSong();
+			bg.player.selectSong(data).playCurrentSong();
+			this.btnPause();
 		},
 		
 		toPascalCase: function(str) {
 			var arr = str.trim().split(/\s|_/);
-			
 			for(var i=0,l=arr.length; i<l; i++) {
 				if (i == 0)
 					arr[i] = arr[i].substr(0, 1).toUpperCase() + arr[i].substr(1);
@@ -86,6 +99,34 @@ define(['underscore',
 					arr[i] = arr[i].substr(0,1).toLowerCase() + arr[i].substr(1);
 			}
 			return arr.join(" ");
+		},
+		
+		searchQuery: function(){
+			var query = $('#search-query-3', this.el).val();
+			this.searchMusic(query);
+		},
+		
+		btnPlay: function(){
+			var button = $('#btn-play', this.el);
+			if (button.hasClass('fui-pause'))
+				button.removeClass('fui-pause').addClass('fui-play');
+		},
+		
+		btnPause: function(){
+			var button = $('#btn-play', this.el);
+			if (button.hasClass('fui-play'))
+				button.removeClass('fui-play').addClass('fui-pause');
+		},
+		
+		onPause: function(){
+			var bg = chrome.extension.getBackgroundPage();
+			bg.player.pauseCurrentSong();
+		},
+		
+		onResume: function(){
+			var bg = chrome.extension.getBackgroundPage();
+			if (!bg.player.get('currentSong')) return;
+			bg.player.playCurrentSong();
 		},
 		
 		searchMusic: function(s){
@@ -123,30 +164,6 @@ define(['underscore',
 					}
 				}
 			});
-		},
-		
-		searchQuery: function(){
-			var query = $('#search-query-3', this.el).val();
-			this.searchMusic(query);
-		},
-		
-		togglePlayAndPause: function(s){
-			var button = $('#btn-play', this.el);
-			if (s == "pause")
-				button.removeClass('fui-play').addClass('fui-pause');
-			else 
-				button.removeClass('fui-pause').addClass('fui-play');
-		},
-		
-		onPause: function(){
-			var bg = chrome.extension.getBackgroundPage();
-			bg.player.pauseCurrentSong();
-		},
-		
-		onResume: function(){
-			var bg = chrome.extension.getBackgroundPage();
-			if (!bg.player.get('currentSong')) return;
-			bg.player.playCurrentSong();
 		}
 	});
 	return PopupView;

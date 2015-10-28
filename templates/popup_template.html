@@ -1,15 +1,17 @@
 <div id='header'>
-	<p id='title'>MIRACLE MUSICP LAYER</p>
+	<p id='title'>Miracle Music Player</p>
+	<a class="glyphicon glyphicon-backward" id='backward-btn' href="#"></a>
+	<a class="fui-play" id="btn-play" href="#"></a>
+	<a class="glyphicon glyphicon-forward" id='forward-btn' href="#"></a>
 </div>
 <div id='player'>
-	<p id='song-title'></p>
-	<p id='time'>00:00</p>
 	<div id='slider'></div>
-	<a class="fui-play" id="btn-play" href="#"></a>
-	<a class="fui-search" href='#' id='btn-search'></a>
+	<p id='time'>00:00</p>
+	<p id='song-title'></p>
+	<a href='#' class='fui-search' id='btn-search'></a>
 </div>
 
-<div id="search-area" tabindex='-1'>
+<div id="search-area">
 	<input type="text" class="form-control" placeholder="Type then enter to search" id="search-query-3" autocomplete="off">
 	<div id="search-box">
 		<ul id="search-list">
