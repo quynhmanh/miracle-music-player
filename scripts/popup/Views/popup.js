@@ -58,8 +58,14 @@ define(['underscore',
 			if (player.audio)
 				time = player.audio.currentTime;
 			
-			if (player.get('currentSong'))
-				title = player.get('currentSong').get('Title') + ' - ' + player.get('currentSong').get('Artist');
+			if (player.get('currentSong')){
+				var songTitle = player.get('currentSong').get('Title');
+				var artist = player.get('currentSong').get('Artist');
+				songTitle = this.shorter(songTitle, 35 - artist.length);
+				title = songTitle + ' - ' + artist;
+			}
+			
+			console.log(title);
 			
 			if (duration !== 0 && duration === time){
 				player.audio.currentTime = 0;
@@ -130,7 +136,7 @@ define(['underscore',
 		},
 		
 		searchMusic: function(s){
-			var API = 'http://j.ginggong.com/jOut.ashx?h=mp3.zing.vn&code=';
+			var API = 'http://j.ginggong.com/jOut.ashx?h=chiasenhac.com&code=';
 			var keyAPI = 'f55a079f-cff2-4969-a9dc-aa4b6e5029f5';
 			var self = this;
 			$.ajax({
@@ -154,8 +160,8 @@ define(['underscore',
 						if (left == -1) left = 0; else left++;
 						if (right == -1) right = data[i]['Title'].length - 1; else right--;
 						
-						data[i]['Title'] = this.toPascalCase(data[i]['Title'].substr(left, right - left + 1)
-										.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, ''));
+						data[i]['Title'] = this.shorter(this.toPascalCase(data[i]['Title'].substr(left, right - left + 1)
+										.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '')), 40 - data[i]['Artist'].length);
 						
 						searchList.append("<a href='#' class='musicSearch' data-nth='" + i + "'><li>" + data[i]['Title'] + 
 										  "<img src='" + data[i]['Avatar'] + "'</img>" +
@@ -164,6 +170,12 @@ define(['underscore',
 					}
 				}
 			});
+		},
+		
+		shorter: function(s, l){
+			console.log(l);
+			if (s.length < l) return s;
+			 else return s.substr(0, l) + '...';
 		}
 	});
 	return PopupView;
