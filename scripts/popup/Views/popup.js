@@ -38,15 +38,22 @@ define(['underscore',
 				}							 
 			});
 			$('#search-area').hide();
-			$('#btn-search').click(function(){
-				$('#search-area').slideToggle();
+			$('#playlist-area').hide();
+			$('.fui-search').click(function(){
+				$('#playlist-area').hide();
+				$('#search-area').toggle();
+			});
+			$('.fui-list-columned').click(function(){
+				$('#search-area').hide();
+				$('#playlist-area').toggle();
 			});
 		},
 		
 		renderTime: function(){
 			var duration = 0;
 			var time = 0;
-			var title = "Have fun ^_^!";
+			var title = "Miracle Music Player";
+			var artist = "Welcome";
 			var player = this.bg.player;
 			
 			if (player.audio && player.audio.ended)
@@ -59,13 +66,9 @@ define(['underscore',
 				time = player.audio.currentTime;
 			
 			if (player.get('currentSong')){
-				var songTitle = player.get('currentSong').get('Title');
-				var artist = player.get('currentSong').get('Artist');
-				songTitle = this.shorter(songTitle, 35 - artist.length);
-				title = songTitle + ' - ' + artist;
+				title = player.get('currentSong').get('Title');
+				artist = player.get('currentSong').get('Artist');
 			}
-			
-			console.log(title);
 			
 			if (duration !== 0 && duration === time){
 				player.audio.currentTime = 0;
@@ -81,7 +84,7 @@ define(['underscore',
 			$('#time', this.el).html( Moment().startOf('day').seconds(time).format('mm:ss') );
 			
 			$('#song-title', this.el).html(title);
-			
+			$('#song-artist', this.el).html(artist);
 			if (player.get('state')) this.btnPause();
 			else this.btnPlay();
 			
@@ -163,17 +166,30 @@ define(['underscore',
 						data[i]['Title'] = this.shorter(this.toPascalCase(data[i]['Title'].substr(left, right - left + 1)
 										.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '')), 40 - data[i]['Artist'].length);
 						
-						searchList.append("<a href='#' class='musicSearch' data-nth='" + i + "'><li>" + data[i]['Title'] + 
+						searchList.append("<li class='track'>" + "<a class='fui-plus' href='#'></a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + i + "' href='#'></a>" + data[i]['Title'] + 
 										  "<img src='" + data[i]['Avatar'] + "'</img>" +
-										  "<span>" + data[i]['Artist'] + "</span>" +
-										  "</li></a>");
+										  "<span> - " + data[i]['Artist'] + "</span>" +
+										  "</li>");
 					}
+					
+					$('.track', this.el).hover(
+						function(){
+							$($(this)[0].children[0]).show();
+							$($(this)[0].children[1]).show();
+						}, 
+						function(){
+							$($(this)[0].children[0]).hide();
+							$($(this)[0].children[1]).hide();
+						}
+					);
 				}
 			});
+			
 		},
 		
+		//class='musicSearch' data-nth='" + i + "'>
+		
 		shorter: function(s, l){
-			console.log(l);
 			if (s.length < l) return s;
 			 else return s.substr(0, l) + '...';
 		}

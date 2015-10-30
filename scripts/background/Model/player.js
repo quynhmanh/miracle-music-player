@@ -26,12 +26,10 @@ define([
 		},
 		
 		playCurrentSong: function(){
-			console.log(this.audio);
 			var self = this;
 			this.set('state', true);
 			this.audio.play();
 			var currentTime = self.audio.currentTime;
-			console.log(currentTime);
 			interval = setInterval(function(){
 				++currentTime;
 				self.set('time', self.audio.currentTime);
