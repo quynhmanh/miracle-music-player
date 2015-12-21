@@ -4,8 +4,9 @@ define(['underscore',
 		'jquery',
 		'moment',
 		'player',
-		'songModel'
-], function(_, Backbone, Html, $, Moment, Player, Song){
+		'songModel',
+		'database'
+], function(_, Backbone, Html, $, Moment, Player, Song, Database){
 	var PopupView = Backbone.View.extend({
 		popupTemplate: _.template(Html),
 		
@@ -13,7 +14,12 @@ define(['underscore',
 			"click .fui-play" : "onResume",
 			"click .fui-pause" : "onPause",
 			"change #search-query-3": "searchQuery",
-			"click .musicSearch": "selectSong"
+			"click .musicSearch": "selectSong",
+			"click .addToPlaylist": "addToPlaylist",
+			"click .musicPlaylist": "playPlaylist",
+			"click .fui-cross": "deletePlaylist",
+			"click .glyphicon-forward" : "nextSong",
+			"click .glyphicon-backward" : "prevSong"
 		},
 		
 		initialize: function(){
@@ -22,6 +28,9 @@ define(['underscore',
 			this.render();
 			this.renderTime();
 			window.bg = this.bg;
+			this.db = new Database();
+			window.db = this.db;
+			this.showPlaylist();
 		},
 		
 		el: '#main-container',
@@ -52,8 +61,8 @@ define(['underscore',
 		renderTime: function(){
 			var duration = 0;
 			var time = 0;
-			var title = "Miracle Music Player";
-			var artist = "Welcome";
+			var title = "Miracle Music Player"; 
+			var artist = "Without music, life would be a mistake";
 			var player = this.bg.player;
 			
 			if (player.audio && player.audio.ended)
@@ -73,6 +82,7 @@ define(['underscore',
 			if (duration !== 0 && duration === time){
 				player.audio.currentTime = 0;
 				player.pauseCurrentSong();
+				player.nextSong();
 			}
 			
 			if (duration !== 0)
@@ -93,10 +103,89 @@ define(['underscore',
 		selectSong: function(e){
 			var nth = e.currentTarget.getAttribute('data-nth');
 			var data = this.searchList[nth];
+			console.log(data);
 			var bg = chrome.extension.getBackgroundPage();
 			bg.player.pauseCurrentSong();
-			bg.player.selectSong(data).playCurrentSong();
+			var listSong = {i:0, list: data};
+			var list = [];
+			list.push(data);
+			console.log(list);
+			bg.player.playlist(0, list).playCurrentSong();;
 			this.btnPause();
+		},
+
+		playPlaylist: function(e){
+			var Id = e.currentTarget.getAttribute('data-nth');
+			var db = new Database();
+			var bg = chrome.extension.getBackgroundPage();
+			bg.player.pauseCurrentSong();
+
+			db.request.onsuccess = function(){
+				var list = [];
+				var request = db.request.result.transaction("customers").objectStore("customers").get(Id);
+				var request2 = db.request.result.transaction("customers").objectStore("customers").openCursor();
+				var i = -1;
+				var callback = function(){
+					bg.player.playlist(i - 1, list);
+				}
+
+				request2.onsuccess = function(event){
+					var cursor = event.target.result;
+					if (cursor){
+						console.log(cursor.value);
+						list.push(cursor.value);
+						if (cursor.value['Id'] == Id)
+							i = list.length;
+						cursor.continue();
+					}
+					else 
+						callback();
+				}
+			}
+		},
+
+		addToPlaylistBackground: function(){
+			var db = new Database();
+			db.request.onsuccess = function(){
+				var list = [];
+				// var request = db.request.result.transaction("customers").objectStore("customers").get(Id);
+				var request2 = db.request.result.transaction("customers").objectStore("customers").openCursor();
+				var callback = function(){
+					console.log("addToPlaylistBackground");
+					bg.player.playlist(0, list, false);
+				}
+
+				request2.onsuccess = function(event){
+					var cursor = event.target.result;
+					if (cursor){
+						console.log(cursor.value);
+						list.push(cursor.value);
+						cursor.continue();
+					}
+					else 
+						callback();
+				}
+			}
+		},
+
+		addToPlaylist: function(e){
+			var nth = e.currentTarget.getAttribute('data-nth');
+			var data = this.searchList[nth];
+			this.db.add(data);
+			this.showPlaylist();
+			this.addToPlaylistBackground();
+		},
+
+		deletePlaylist: function(e) {
+			var self = this;
+			var Id = e.currentTarget.getAttribute('data-nth');
+			var db = new Database();
+			console.log(Id);
+			db.request.onsuccess = function(){
+				var request = db.request.result.transaction("customers", "readwrite").objectStore("customers").delete(Id);
+				self.addToPlaylistBackground();
+			}
+			this.showPlaylist();
 		},
 		
 		toPascalCase: function(str) {
@@ -156,7 +245,7 @@ define(['underscore',
 						searchList.append("<li>Tips: Searching with both name and artist of the song</li>");
 					}
 					for (var i = 0; i < data.length; ++i){
-						if (i > 8) break;
+						if (i > 6) break;
 						
 						var left = data[i]['Title'].indexOf('/');
 						var right = data[i]['Title'].indexOf('+');
@@ -166,9 +255,9 @@ define(['underscore',
 						data[i]['Title'] = this.shorter(this.toPascalCase(data[i]['Title'].substr(left, right - left + 1)
 										.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '')), 40 - data[i]['Artist'].length);
 						
-						searchList.append("<li class='track'>" + "<a class='fui-plus' href='#'></a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + i + "' href='#'></a>" + data[i]['Title'] + 
+						searchList.append("<li class='track'>" + "<a class='fui-plus addToPlaylist' href='#' data-nth='" + i + "'/></a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + i + "' href='#'></a>" + data[i]['Title'] + 
 										  "<img src='" + data[i]['Avatar'] + "'</img>" +
-										  "<span> - " + data[i]['Artist'] + "</span>" +
+										  "<p>" + data[i]['Artist'] + "</p>" +
 										  "</li>");
 					}
 					
@@ -192,6 +281,50 @@ define(['underscore',
 		shorter: function(s, l){
 			if (s.length < l) return s;
 			 else return s.substr(0, l) + '...';
+		},
+
+		showPlaylist: function(){
+			var self = this;
+			$('#playlist-area').empty();
+
+			var db = new Database();
+			db.request.onsuccess = function(){
+				var objectStore = db.request.result.transaction("customers").objectStore("customers");
+				objectStore.openCursor().onsuccess = function(event) {
+					var cursor = event.target.result;
+					if (cursor){
+						// console.log(cursor.value);
+
+						$('#playlist-area').append("<li class='track'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + cursor.value['Title'] + 
+										  "<img src='" + cursor.value['Avatar'] + "'</img>" +
+										  "<p>" + cursor.value['Artist'] + "</p>" +
+										  "</li>");
+
+						$('.track', this.el).hover(
+							function(){
+								$($(this)[0].children[0]).show();
+								$($(this)[0].children[1]).show();
+							}, 
+							function(){
+								$($(this)[0].children[0]).hide();
+								$($(this)[0].children[1]).hide();
+							}
+						)
+						cursor.continue();
+					} 
+				}	
+
+			}
+		},
+
+		nextSong: function(){
+			this.bg.player.pauseCurrentSong();
+			this.bg.player.nextSong();
+		},
+
+		prevSong: function(){
+			this.bg.player.pauseCurrentSong();
+			this.bg.player.prevSong();	
 		}
 	});
 	return PopupView;
