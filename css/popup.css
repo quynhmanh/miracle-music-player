@@ -32,6 +32,7 @@ body {
 	display: inline;
 	color: #223049;
 	font-size: 18px;
+	font-weight: 600;
 	margin-left: 5px;
 	margin-top: 5px;
 }
@@ -161,11 +162,15 @@ body {
 
 }
 
-#search-box {
+#search-box, #playlist-area {
 	padding-top: 1px;
 	height:  317px;
 	color: #DADFE1;
 	background-color: rgba(255, 255, 255, 0.3);
+}
+
+#playlist-area {
+	height:  357px;
 }
 
 #search-box > ul, #playlist-area {
@@ -175,6 +180,7 @@ body {
 	padding-left: 0px;
 }
 
+
 #search-box > ul > li, #playlist-area > li {
 	font-size: 14px;
 	font-weight: 600;
@@ -183,7 +189,16 @@ body {
 	color: #6C7A89;
 	text-align: left;
 	padding-left: 10px;
+	padding-right: 1px;
 	z-index: 100;
+}
+#playlist-area > li.playing {
+	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,1);
+	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,1);
+	box-shadow: 0px 0px 1px 1px rgba(102,102,102,1);
+	background-color: #ecf0f1;
+	margin-bottom: 2px;
+	margin-top: 2px;
 }
 
 #search-box > ul > li > p, #playlist-area > li > p {
@@ -191,6 +206,7 @@ body {
 	font-size: 12px;
 	margin: 0;
 	margin-right: 8px;
+	margin-left: 10px;
 	color: #6C7A89;
 }
 
@@ -198,8 +214,8 @@ body {
 	margin-top: 3px;
 	margin-right: 2px;
 	padding: 0;
-	height: 40px;
-	width: 40px;
+	height: 39px;
+	width: 39px;
 	float: right;
 	-webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.95);
 	-moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.95);
@@ -276,6 +292,22 @@ body {
 	font-size: 21px;
 	display: none;
 	z-index: 101;
+}
+
+.fui-cross {
+	color: #EF4836;
+}
+
+.fui-cross:hover {
+	color: #D64541;	
+}
+
+.fui-plus {
+	color: #16A085;
+}
+
+.fui-triangle-right-large {
+	color: #446CB3;
 }
 
 .fui-triangle-right-large {

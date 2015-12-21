@@ -26,5 +26,4 @@ require([
 	});
 	
 	
-	console.log(new Database());
 });

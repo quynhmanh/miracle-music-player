@@ -31,6 +31,7 @@ define(['underscore',
 			this.db = new Database();
 			window.db = this.db;
 			this.showPlaylist();
+			this.addToPlaylistBackground();
 		},
 		
 		el: '#main-container',
@@ -51,6 +52,7 @@ define(['underscore',
 			$('.fui-search').click(function(){
 				$('#playlist-area').hide();
 				$('#search-area').toggle();
+				$('#search-list').empty();
 			});
 			$('.fui-list-columned').click(function(){
 				$('#search-area').hide();
@@ -101,6 +103,7 @@ define(['underscore',
 		},
 		
 		selectSong: function(e){
+			console.log(e);
 			var nth = e.currentTarget.getAttribute('data-nth');
 			var data = this.searchList[nth];
 			console.log(data);
@@ -115,6 +118,7 @@ define(['underscore',
 		},
 
 		playPlaylist: function(e){
+			var self = this;
 			var Id = e.currentTarget.getAttribute('data-nth');
 			var db = new Database();
 			var bg = chrome.extension.getBackgroundPage();
@@ -127,6 +131,7 @@ define(['underscore',
 				var i = -1;
 				var callback = function(){
 					bg.player.playlist(i - 1, list);
+					self.showPlaylist();
 				}
 
 				request2.onsuccess = function(event){
@@ -169,6 +174,8 @@ define(['underscore',
 		},
 
 		addToPlaylist: function(e){
+			// console.log(e.currentTarget);
+			$(e.currentTarget).hide();
 			var nth = e.currentTarget.getAttribute('data-nth');
 			var data = this.searchList[nth];
 			this.db.add(data);
@@ -226,6 +233,27 @@ define(['underscore',
 			if (!bg.player.get('currentSong')) return;
 			bg.player.playCurrentSong();
 		},
+
+		inPlaylist: function(song){
+			var bg = chrome.extension.getBackgroundPage();
+			var list = bg.player.get('list');
+			for (var i = 0; i < list.length; ++i)
+				if (list[i]['Id'] === song['Id'] || list[i]['Title'] === song['Title'] )
+					return true;
+			return false;
+		},
+
+		isPlaying: function(song){
+			var bg = chrome.extension.getBackgroundPage();
+			var list = bg.player.get('list');
+			var i = bg.player.get('i');
+			if (!list)
+				return false;
+			var s = list[i];
+			if (s['Id'] === song['Id'] || s['Title'] === song['Title'])
+				return true;
+			return false;
+		},
 		
 		searchMusic: function(s){
 			var API = 'http://j.ginggong.com/jOut.ashx?h=chiasenhac.com&code=';
@@ -255,7 +283,9 @@ define(['underscore',
 						data[i]['Title'] = this.shorter(this.toPascalCase(data[i]['Title'].substr(left, right - left + 1)
 										.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '')), 40 - data[i]['Artist'].length);
 						
-						searchList.append("<li class='track'>" + "<a class='fui-plus addToPlaylist' href='#' data-nth='" + i + "'/></a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + i + "' href='#'></a>" + data[i]['Title'] + 
+						searchList.append("<li class='track'>" + (self.inPlaylist(data[i]) ? "" : "<a class='fui-plus addToPlaylist' href='#' data-nth='" + i + "'/>") +
+										  "</a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + i + "' href='#'></a>" 
+										  + data[i]['Title'] + 
 										  "<img src='" + data[i]['Avatar'] + "'</img>" +
 										  "<p>" + data[i]['Artist'] + "</p>" +
 										  "</li>");
@@ -265,10 +295,14 @@ define(['underscore',
 						function(){
 							$($(this)[0].children[0]).show();
 							$($(this)[0].children[1]).show();
+							$('img', this).show();
+							$('p', this).show();
 						}, 
 						function(){
 							$($(this)[0].children[0]).hide();
 							$($(this)[0].children[1]).hide();
+							$('img', this).show();
+							$('p', this).show();
 						}
 					);
 				}
@@ -294,20 +328,31 @@ define(['underscore',
 					var cursor = event.target.result;
 					if (cursor){
 						// console.log(cursor.value);
-
-						$('#playlist-area').append("<li class='track'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + cursor.value['Title'] + 
-										  "<img src='" + cursor.value['Avatar'] + "'</img>" +
-										  "<p>" + cursor.value['Artist'] + "</p>" +
-										  "</li>");
-
+						var song = cursor.value;
+						if (!self.isPlaying(song))
+							$('#playlist-area').append("<li class='track'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + cursor.value['Title'] + 
+											  "<img src='" + cursor.value['Avatar'] + "'</img>" +
+											  "<p>" + cursor.value['Artist'] + "</p>" +
+											  "</li>");
+						else
+							$('#playlist-area').append("<li class='track playing'>" +
+												"<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a>" +
+											  cursor.value['Title'] + 
+											  "<img src='" + cursor.value['Avatar'] + "'</img>" +
+											  "<p class='faa-pulse animated faa-slow'>" + cursor.value['Artist'] + "</p>" +
+											  "</li>");
 						$('.track', this.el).hover(
 							function(){
 								$($(this)[0].children[0]).show();
 								$($(this)[0].children[1]).show();
+								$('p', this).show();
+								$('img', this).show();
 							}, 
 							function(){
 								$($(this)[0].children[0]).hide();
 								$($(this)[0].children[1]).hide();
+								$('p', this).show();
+								$('img', this).show();
 							}
 						)
 						cursor.continue();
@@ -318,11 +363,13 @@ define(['underscore',
 		},
 
 		nextSong: function(){
+			this.showPlaylist();
 			this.bg.player.pauseCurrentSong();
 			this.bg.player.nextSong();
 		},
 
 		prevSong: function(){
+			this.showPlaylist();
 			this.bg.player.pauseCurrentSong();
 			this.bg.player.prevSong();	
 		}

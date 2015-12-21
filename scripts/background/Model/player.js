@@ -17,6 +17,7 @@ define([
 		},
 		
 		initialize: function(){
+
 		},
 
 		playlist: function(i, list, b){
@@ -24,6 +25,13 @@ define([
 			console.log(b);
 			if (b === false){
 				var _list = this.get('list');
+				console.log(_list);
+				if (!_list){
+					console.log(list);
+					this.set('list', list);
+					this.set('i', 0);
+					return;
+				}
 				var song = _list[this.get('i')];
 				// console.log(song);
 				// console.log(list);
