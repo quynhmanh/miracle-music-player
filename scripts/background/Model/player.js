@@ -34,7 +34,7 @@ define([
 				}
 				var song = _list[this.get('i')];
 				// console.log(song);
-				// console.log(list);
+				console.log(list);
 				var deleteCurrentSong = false;
 				for (var j = 0; j < list.length; ++j)
 					if (list[j]['Id'] === song['Id']){
@@ -78,6 +78,7 @@ define([
 		},
 		
 		pauseCurrentSong: function(){
+			console.log("Pause current song");
 			if (this.audio) this.audio.pause();
 			this.set('state', false);
 		},

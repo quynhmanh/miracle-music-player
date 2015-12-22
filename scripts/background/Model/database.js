@@ -2,9 +2,8 @@ define(['backbone'], function(Backbone){
 	var Database = Backbone.Model.extend({
 		initialize: function() {
 			var self = this;
-			this.request = window.indexedDB.open("newDatabase", 1);
 			window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
- 
+			this.request = window.indexedDB.open("newDatabase", 1);
 			//prefixes of window.IDB objects
 			window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
 			window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;

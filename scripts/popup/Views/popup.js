@@ -23,7 +23,10 @@ define(['underscore',
 		},
 		
 		initialize: function(){
+			var background = chrome.extension.getBackgroundPage();
+			background.console.log(background.player);
 			this.bg = chrome.extension.getBackgroundPage();
+			console.log(this.bg.player);
 			this.bg.player.on('change', this.renderTime, this);
 			this.render();
 			this.renderTime();
@@ -32,6 +35,11 @@ define(['underscore',
 			window.db = this.db;
 			this.showPlaylist();
 			this.addToPlaylistBackground();
+			addEventListener("unload", function (event) {
+				background.console.log(this.bg.player);
+				this.bg.player.off('change', this.renderTime);
+				background.console.log(event.type);
+			});
 		},
 		
 		el: '#main-container',
@@ -52,15 +60,15 @@ define(['underscore',
 			$('.fui-search').click(function(){
 				$('#playlist-area').hide();
 				$('#search-area').toggle();
-				$('#search-list').empty();
 			});
-			$('.fui-list-columned').click(function(){
+			$('.fui-clip').click(function(){
 				$('#search-area').hide();
 				$('#playlist-area').toggle();
 			});
 		},
 		
 		renderTime: function(){
+			console.log(this.bg.player);
 			var duration = 0;
 			var time = 0;
 			var title = "Miracle Music Player"; 
@@ -81,20 +89,25 @@ define(['underscore',
 				artist = player.get('currentSong').get('Artist');
 			}
 			
-			if (duration !== 0 && duration === time){
-				player.audio.currentTime = 0;
-				player.pauseCurrentSong();
-				player.nextSong();
+
+			// console.log(time + " " + duration);
+			if (player.audio && player.audio.ended){
+				// player.audio.currentTime = 0;
+				this.nextSong();
 			}
-			
-			if (duration !== 0)
-				$('#slider', this.el).slider({ value: time * 100 / duration });
-			
+
 			if (player.audio && player.audio.ended)
-				$('#slider', this.el).slider({ value: time * 100 / duration });
+				$('#slider', this.el).slider({ value: 0 });
+
+			if (duration !== 0)
+				$('#slider', this.el).slider({ value: (time - 3) * 100 / duration });
+			
 			
 			$('#time', this.el).html( Moment().startOf('day').seconds(time).format('mm:ss') );
-			
+
+			if (isNaN(duration)) duration = 0;
+				$('.duration', this.el).html( Moment().startOf('day').seconds(duration).format('mm:ss') );
+
 			$('#song-title', this.el).html(title);
 			$('#song-title', this.el).addClass('faa-horizontal animated faa-slow');
 			$('#song-artist', this.el).html(artist);
@@ -369,7 +382,7 @@ define(['underscore',
 										// console.log(song['Title'] + "/" + song['Artist']);
 										searchList.append("<li class='track'>" + (self.inPlaylist(song) ? "" : "<a class='fui-plus addToPlaylist' href='#' data-nth='" + (list.length - 1) + "'/>") +
 										  "</a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + (list.length - 1) + "' href='#'></a>" 
-										  + self.shorter(song['Title'], 30) + 
+										  + self.shorter(song['Title'], 27) + 
 										  "<img src='" + ava + "'</img>" +
 										  "<p>" + name + "</p>" +
 										  "</li>");
@@ -472,15 +485,16 @@ define(['underscore',
 		},
 
 		nextSong: function(){
-			this.showPlaylist();
 			this.bg.player.pauseCurrentSong();
 			this.bg.player.nextSong();
+			console.log("next song");
+			this.showPlaylist();
 		},
 
 		prevSong: function(){
-			this.showPlaylist();
 			this.bg.player.pauseCurrentSong();
 			this.bg.player.prevSong();	
+			this.showPlaylist();
 		}
 	});
 	return PopupView;
