@@ -387,6 +387,15 @@ define(['underscore',
 												$('p', this).show();
 											}
 										);
+										$('#search-box > ul > li', this.el).hover(
+											function(){
+												$('img', this).css('opacity', 0.2);
+
+											},
+											function(){
+												$('img', this).css('opacity', 1);
+											}
+										);
 									}
 								});
 							}
@@ -445,6 +454,16 @@ define(['underscore',
 								$('img', this).show();
 							}
 						)
+
+						$('#playlist-area > li', this.el).hover(
+							function(){
+								$('img', this).css('opacity', 0.2);
+							},
+							function(){
+								$('img', this).css('opacity', 1);
+							}
+						);
+
 						cursor.continue();
 					} 
 				}	
