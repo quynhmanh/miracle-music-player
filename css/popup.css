@@ -166,7 +166,6 @@ body {
 	padding-top: 1px;
 	height:  317px;
 	color: #DADFE1;
-	background-color: rgba(255, 255, 255, 0.3);
 }
 
 #playlist-area {
@@ -193,9 +192,9 @@ body {
 	z-index: 100;
 }
 #playlist-area > li.playing {
-	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,1);
-	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,1);
-	box-shadow: 0px 0px 1px 1px rgba(102,102,102,1);
+	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.5);
+	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.5);
+	box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.5);
 	background-color: #ecf0f1;
 	margin-bottom: 2px;
 	margin-top: 2px;
@@ -215,8 +214,9 @@ body {
 	margin-right: 2px;
 	padding: 0;
 	height: 39px;
-	width: 39px;
+	width: 60px;
 	float: right;
+	clear: both;
 	-webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.95);
 	-moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.95);
 	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.95);
@@ -224,6 +224,9 @@ body {
 
 #search-box > ul > li:hover, #playlist-area > li:hover {
 	background-color: #ecf0f1;
+	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.5);
+	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.5);
+	box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.5);
 }
 
 #btn-search {
@@ -287,7 +290,7 @@ body {
 	display: inline;
 	position: absolute;
 	margin-top: 10px;
-	margin-left: 275px;
+	margin-left: 258px;
 	color: #6C7A89;
 	font-size: 21px;
 	display: none;
@@ -304,6 +307,7 @@ body {
 
 .fui-plus {
 	color: #16A085;
+	mar
 }
 
 .fui-triangle-right-large {
@@ -311,6 +315,6 @@ body {
 }
 
 .fui-triangle-right-large {
-	margin-left: 246px;
+	margin-left: 230px;
 }
 

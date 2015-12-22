@@ -23,5 +23,5 @@
 		"128": "images/icon-128.png"
 	},
 	
-	"content_security_policy": "script-src 'self' 'unsafe-eval' https://s.ytimg.com/yts/jsbin/ https://www.youtube.com/ https://ssl.google-analytics.com/ http://localhost; object-src 'self'"
+	"content_security_policy": "script-src 'self' 'unsafe-eval' https://connect.soundcloud.com/sdk/sdk-3.0.0.js https://s.ytimg.com/yts/jsbin/ https://www.youtube.com/ https://ssl.google-analytics.com/ http://localhost; object-src 'self'"
 }

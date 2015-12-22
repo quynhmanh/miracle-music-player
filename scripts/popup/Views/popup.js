@@ -96,7 +96,9 @@ define(['underscore',
 			$('#time', this.el).html( Moment().startOf('day').seconds(time).format('mm:ss') );
 			
 			$('#song-title', this.el).html(title);
+			$('#song-title', this.el).addClass('faa-horizontal animated faa-slow');
 			$('#song-artist', this.el).html(artist);
+			$('#song-artist', this.el).addClass('faa-horizontal animated faa-slow');
 			if (player.get('state')) this.btnPause();
 			else this.btnPlay();
 			
@@ -247,64 +249,152 @@ define(['underscore',
 			var bg = chrome.extension.getBackgroundPage();
 			var list = bg.player.get('list');
 			var i = bg.player.get('i');
-			if (!list)
+			if (!list || list.length === 0)
 				return false;
 			var s = list[i];
+			console.log(list);
 			if (s['Id'] === song['Id'] || s['Title'] === song['Title'])
 				return true;
 			return false;
 		},
 		
 		searchMusic: function(s){
-			var API = 'http://j.ginggong.com/jOut.ashx?h=chiasenhac.com&code=';
-			var keyAPI = 'f55a079f-cff2-4969-a9dc-aa4b6e5029f5';
 			var self = this;
+			// SC.initialize({
+			//   	client_id: '543ea2d2b1d330cf33e36d7f5831ef91'
+			// });
+
+			// // find all sounds of buskers licensed under 'creative commons share alike'
+			// SC.get('/tracks', {
+			//   	q: s
+			// }).then(function(data) {
+			//   	console.log(data);
+			//   	self.searchList = data;
+			// 		var searchList =  $('#search-list');
+			// 		searchList.empty();
+			// 		if (data.length === 0){
+			// 			searchList.append("<li>Try again</li>");
+			// 			searchList.append("<li>Tips: Searching with both name and artist of the song</li>");
+			// 		}
+			// 		console.log(data.length);
+			// 		for (var i = 0; i < data.length; ++i){
+			// 			if (i > 6) break;
+			// 			// var left = data[i]['title'].indexOf('/');
+			// 			// var right = data[i]['title'].indexOf('+');
+			// 			// // console.log(data[i]['title']);	
+			// 			// if (left === -1) left = 0; else left++;
+			// 			// if (right === -1) right = data[i]['title'].length - 1; else right--;
+			// 			// // console.log(data[i]['title']);						
+			// 			// data[i]['title'] = this.shorter(this.toPascalCase(data[i]['title'].substr(left, right - left + 1)
+			// 			// 				.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '')), 40 - data[i]['Artist'].length);
+			// 			// console.log(data[i]['title']);
+
+			// 			var id = data[i]['title'].indexOf('-');
+			// 			var title = data[i]['title'].substr(0, id);
+			// 			var artist = data[i]['title'].substr(id+1, 999);
+			// 			if (id === -1){
+			// 				title = data[i]['title'];
+			// 				artist = "Unknow";
+			// 			}
+			// 			console.log(title + " " + artist);
+			// 			searchList.append("<li class='track'>" + (self.inPlaylist(data[i]) ? "" : "<a class='fui-plus addToPlaylist' href='#' data-nth='" + i + "'/>") +
+			// 							  "</a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + i + "' href='#'></a>" 
+			// 							  + title + 
+			// 							  "<img src='" + data[i]['artwork_url'] + "'</img>" +
+			// 							  "<p>" + artist + "</p>" +
+			// 							  "</li>");
+			// 		}
+					
+			// 		$('.track', this.el).hover(
+			// 			function(){
+			// 				$($(this)[0].children[0]).show();
+			// 				$($(this)[0].children[1]).show();
+			// 				$('img', this).show();
+			// 				$('p', this).show();
+			// 			}, 
+			// 			function(){
+			// 				$($(this)[0].children[0]).hide();
+			// 				$($(this)[0].children[1]).hide();
+			// 				$('img', this).show();
+			// 				$('p', this).show();
+			// 			}
+			// 		);
+			// });
+			var API = 'http://mp3.zing.vn/suggest/search?';
+			// var keyAPI = 'f55a079f-cff2-4969-a9dc-aa4b6e5029f5';
 			$.ajax({
 				context: this,
-				url: API + keyAPI,
-				data: 'k=' + encodeURIComponent(s),
+				url: API,
+				data: 'term=' + encodeURIComponent(s),
 				dataType: 'json',
 				success: function(data){
-					self.searchList = data;
+					var list = [];
+					self.searchList = [];
+					console.log(data['song']['list']);
+					self.searchList = [];
 					var searchList =  $('#search-list');
 					searchList.empty();
 					if (data.length === 0){
 						searchList.append("<li>Try again</li>");
 						searchList.append("<li>Tips: Searching with both name and artist of the song</li>");
 					}
+					data = data['song']['list'];
 					for (var i = 0; i < data.length; ++i){
 						if (i > 6) break;
 						
-						var left = data[i]['Title'].indexOf('/');
-						var right = data[i]['Title'].indexOf('+');
-						if (left == -1) left = 0; else left++;
-						if (right == -1) right = data[i]['Title'].length - 1; else right--;
-						
-						data[i]['Title'] = this.shorter(this.toPascalCase(data[i]['Title'].substr(left, right - left + 1)
-										.replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff]/g, '')), 40 - data[i]['Artist'].length);
-						
-						searchList.append("<li class='track'>" + (self.inPlaylist(data[i]) ? "" : "<a class='fui-plus addToPlaylist' href='#' data-nth='" + i + "'/>") +
-										  "</a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + i + "' href='#'></a>" 
-										  + data[i]['Title'] + 
-										  "<img src='" + data[i]['Avatar'] + "'</img>" +
-										  "<p>" + data[i]['Artist'] + "</p>" +
+						$.ajax({
+							context: self,
+							url: 'http://mp3.zing.vn/bai-hat/a/' + data[i]['object_id'] + '.html',
+							success: function(data) {
+								var regex = /xmlURL=(.+?)\&amp\;textad/g;
+								var xml = data.match(regex)[0];
+								xml = xml.replace('&amp;textad', '').replace('xmlURL=', '');
+								$.ajax({
+									context: self,
+									url: xml,
+									dataType: 'text',
+									success: function(data) {
+										var regex = /<!\[CDATA\[.*?\]\]>/g;
+										var title = data.match(regex)[0].replace('<![CDATA[', '').replace(']]>', '');
+										var name = data.match(regex)[1].replace('<![CDATA[', '').replace(']]>', '');
+										var link = data.match(regex)[3].replace('<![CDATA[', '').replace(']]>', '');
+										var Id = data.match(regex)[7].replace('<![CDATA[', '').replace(']]>', '');
+										var ava = data.match(regex)[8].replace('<![CDATA[', '').replace(']]>', '');
+										var song = {Title: title, Artist: name, UrlJunDownload: link, Id: Id, Avatar: ava}; 
+										console.log(song);
+										list.push(song);
+										self.searchList.push(song);
+										song['Title'] = song['Title'].replace(/[\u4e00-\u9fff\u3400-\u4dff\uf900-\ufaff/]/g, '');
+										// song['Title'] = song['Title'].substr(0, song['Title'].indexOf('+'));
+										// console.log(song['Title'] + "/" + song['Artist']);
+										searchList.append("<li class='track'>" + (self.inPlaylist(song) ? "" : "<a class='fui-plus addToPlaylist' href='#' data-nth='" + (list.length - 1) + "'/>") +
+										  "</a><a href='#' class='fui-triangle-right-large musicSearch' data-nth='" + (list.length - 1) + "' href='#'></a>" 
+										  + self.shorter(song['Title'], 30) + 
+										  "<img src='" + ava + "'</img>" +
+										  "<p>" + name + "</p>" +
 										  "</li>");
+										$('.track', this.el).hover(
+											function(){
+												$($(this)[0].children[0]).show();
+												$($(this)[0].children[1]).show();
+												$('img', this).show();
+												$('p', this).show();
+											}, 
+											function(){
+												$($(this)[0].children[0]).hide();
+												$($(this)[0].children[1]).hide();
+												$('img', this).show();
+												$('p', this).show();
+											}
+										);
+									}
+								});
+							}
+						});
+
 					}
 					
-					$('.track', this.el).hover(
-						function(){
-							$($(this)[0].children[0]).show();
-							$($(this)[0].children[1]).show();
-							$('img', this).show();
-							$('p', this).show();
-						}, 
-						function(){
-							$($(this)[0].children[0]).hide();
-							$($(this)[0].children[1]).hide();
-							$('img', this).show();
-							$('p', this).show();
-						}
-					);
+					
 				}
 			});
 			
@@ -327,7 +417,7 @@ define(['underscore',
 				objectStore.openCursor().onsuccess = function(event) {
 					var cursor = event.target.result;
 					if (cursor){
-						// console.log(cursor.value);
+						console.log(cursor.value);
 						var song = cursor.value;
 						if (!self.isPlaying(song))
 							$('#playlist-area').append("<li class='track'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + cursor.value['Title'] + 
@@ -339,7 +429,7 @@ define(['underscore',
 												"<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a>" +
 											  cursor.value['Title'] + 
 											  "<img src='" + cursor.value['Avatar'] + "'</img>" +
-											  "<p class='faa-pulse animated faa-slow'>" + cursor.value['Artist'] + "</p>" +
+											  "<p class=''>" + cursor.value['Artist'] + "</p>" +
 											  "</li>");
 						$('.track', this.el).hover(
 							function(){
