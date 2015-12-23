@@ -69,20 +69,21 @@ body {
 }
 
 #slider > a {
-	background-color: #2C3E50;
+	background-color: #34495E;
 	border-radius: 0;
     left: 0%;
     height: 11px;
-	width: 10px;
+	width: 11px;
     margin-top: 3px;
+    border-radius: 20px;
 }
 
 #btn-play, #btn-pause {
 	border: 0;
 	background-color: rgba(255, 0, 0, 0);
 	margin-top: 5px;
-	font-size: 13px;
-	margin-left: 1px;
+	font-size: 14px;
+	margin-left: 0px;
 	margin-right: 0px;
 	margin-top: 2px;
 	color: #2C3E50;
@@ -98,8 +99,8 @@ body {
 	font-family: sans-serif;
 	display: inline;
 	color: #6C7A89;
-	margin-left: 4px;
-	margin-right: 9px;
+	margin-left: 6px;
+	margin-right: 1px;
 }
 
 #player {
@@ -131,10 +132,11 @@ body {
 }
 
 #controller > #btn {
-	width: 85px;
+	width: 89px;
     margin-right: 0;
     float: left;
 	border-right: 1px solid #C5EFF7;
+	padding-top: 1px;
 }
 
 #search-area, #playlist-area {
@@ -218,6 +220,10 @@ body {
 	padding-left: 0px;
 }
 
+#search-box > ul {
+	margin-top: 4px;
+}
+
 #playlist-area {
 	height:  357px;
 	/*overflow: scroll;*/
@@ -248,7 +254,7 @@ body {
 	font-weight: 600;
 	line-height: 25px;
 	width: 100%;
-	color: #336E7B;
+	color: #2C3E50;
 	text-align: left;
 	padding-left: 10px;
 	padding-right: 1px;
@@ -348,6 +354,7 @@ body {
 	color: #336E7B;
 }
 
+
 .fui-plus, .fui-triangle-right-large, .fui-cross {
 	display: inline;
 	position: absolute;
@@ -389,3 +396,4 @@ body {
 .clearable.x  { background-position: right 5px center; }
 .clearable.onX{ cursor: pointer; }
 .clearable::-ms-clear {display: none; width:0; height:0;}
+
