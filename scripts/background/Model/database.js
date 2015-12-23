@@ -13,10 +13,10 @@ define(['backbone'], function(Backbone){
 			 	{ id: "00-02", name: "Donna", age: 32, email: "donna@home.org" }
 			];
 
-			console.log(this.request);
+			// console.log(this.request);
 
 			this.request.onerror = function(event) {
-			  	console.log("error: ");
+			  	// console.log("error: ");
 			};
 			 
 			this.request.onsuccess = function(event) {

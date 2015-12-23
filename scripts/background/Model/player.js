@@ -12,6 +12,7 @@ define([
 			currentSong: null,
 			list: null,
 			state: false,
+			ns: false,
 			time: 0,
 			i: 0
 		},
@@ -74,6 +75,10 @@ define([
 			interval = setInterval(function(){
 				++currentTime;
 				self.set('time', self.audio.currentTime);
+				if (self.audio.ended){
+					self.set('ns', true);
+					self.nextSong();
+				}
 			}, 1000);
 		},
 		
@@ -84,6 +89,8 @@ define([
 		},
 
 		nextSong: function(){
+			this.set('ns', true);
+			this.pauseCurrentSong();
 			console.log("Next song");
 			var i = this.get('i');
 			var list = this.get('list');
@@ -95,6 +102,8 @@ define([
 		},
 
 		prevSong: function(){
+			this.set('ns', true);
+			this.pauseCurrentSong();
 			console.log("Prev song");
 			var i = this.get('i');
 			var list = this.get('list');

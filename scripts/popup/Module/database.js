@@ -15,7 +15,7 @@ define(['backbone'], function(Backbone){
 			
 			this.request.onsuccess = function(event) {
 			  	self.db = self.request.result;
-			  	console.log("success: "+ self.db);
+			  	// console.log("success: "+ self.db);
 			};
 
 			this.request.onupgradeneeded = function(event) {

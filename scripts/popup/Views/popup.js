@@ -23,11 +23,14 @@ define(['underscore',
 		},
 		
 		initialize: function(){
+			var self = this;
 			var background = chrome.extension.getBackgroundPage();
 			background.console.log(background.player);
 			this.bg = chrome.extension.getBackgroundPage();
-			console.log(this.bg.player);
-			this.bg.player.on('change', this.renderTime, this);
+			// console.log(this.bg.player);
+			interval = setInterval(function(){
+				self.renderTime();
+			}, 1000);
 			this.render();
 			this.renderTime();
 			window.bg = this.bg;
@@ -35,11 +38,6 @@ define(['underscore',
 			window.db = this.db;
 			this.showPlaylist();
 			this.addToPlaylistBackground();
-			addEventListener("unload", function (event) {
-				background.console.log(this.bg.player);
-				this.bg.player.off('change', this.renderTime);
-				background.console.log(event.type);
-			});
 		},
 		
 		el: '#main-container',
@@ -51,7 +49,7 @@ define(['underscore',
 				change: function( event, ui ) {
 					if (event.altKey === false && self.bg.player.audio && self.bg.player.audio.duration){
 						self.bg.player.audio.currentTime = self.bg.player.audio.duration * ui.value / 100;
-						console.log(self.bg.player.audio.duration * ui.value / 100);
+						// console.log(self.bg.player.audio.duration * ui.value / 100);
 					}
 				}							 
 			});
@@ -68,7 +66,7 @@ define(['underscore',
 		},
 		
 		renderTime: function(){
-			console.log(this.bg.player);
+			// console.log(this.bg.player);
 			var duration = 0;
 			var time = 0;
 			var title = "Miracle Music Player"; 
@@ -89,11 +87,10 @@ define(['underscore',
 				artist = player.get('currentSong').get('Artist');
 			}
 			
-
-			// console.log(time + " " + duration);
-			if (player.audio && player.audio.ended){
-				// player.audio.currentTime = 0;
-				this.nextSong();
+			if (player.get('ns') === true){
+				console.log("ns");
+				this.showPlaylist();
+				player.set('ns', false);
 			}
 
 			if (player.audio && player.audio.ended)
@@ -171,14 +168,14 @@ define(['underscore',
 				// var request = db.request.result.transaction("customers").objectStore("customers").get(Id);
 				var request2 = db.request.result.transaction("customers").objectStore("customers").openCursor();
 				var callback = function(){
-					console.log("addToPlaylistBackground");
+					// console.log("addToPlaylistBackground");
 					bg.player.playlist(0, list, false);
 				}
 
 				request2.onsuccess = function(event){
 					var cursor = event.target.result;
 					if (cursor){
-						console.log(cursor.value);
+						// console.log(cursor.value);
 						list.push(cursor.value);
 						cursor.continue();
 					}
@@ -265,7 +262,7 @@ define(['underscore',
 			if (!list || list.length === 0)
 				return false;
 			var s = list[i];
-			console.log(list);
+			// console.log(list);
 			if (s['Id'] === song['Id'] || s['Title'] === song['Title'])
 				return true;
 			return false;
@@ -439,7 +436,7 @@ define(['underscore',
 				objectStore.openCursor().onsuccess = function(event) {
 					var cursor = event.target.result;
 					if (cursor){
-						console.log(cursor.value);
+						// console.log(cursor.value);
 						var song = cursor.value;
 						if (!self.isPlaying(song))
 							$('#playlist-area').append("<li class='track'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + cursor.value['Title'] + 
@@ -485,16 +482,13 @@ define(['underscore',
 		},
 
 		nextSong: function(){
-			this.bg.player.pauseCurrentSong();
-			this.bg.player.nextSong();
-			console.log("next song");
-			this.showPlaylist();
+			var player = this.bg.player;
+			player.nextSong();
 		},
 
 		prevSong: function(){
-			this.bg.player.pauseCurrentSong();
-			this.bg.player.prevSong();	
-			this.showPlaylist();
+			var player = this.bg.player;
+			player.prevSong();
 		}
 	});
 	return PopupView;

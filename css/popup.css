@@ -12,7 +12,7 @@ body {
 	padding: 0;
 	margin: 0;
 	font-family: sans-serif;
-	color: white;
+	color: #22313F;
 }
 
 #header {
@@ -30,7 +30,7 @@ body {
 
 #title {
 	display: inline;
-	color: #223049;
+	color: #22313F;
 	font-size: 18px;
 	font-weight: 600;
 	margin-left: 5px;
@@ -45,7 +45,7 @@ body {
     margin-bottom: 7px;
 	text-align: center;
 	font-weight: 500;
-	color: #6C7A89;
+	color: #22313F;
 }
 
 #song-title {
@@ -248,7 +248,7 @@ body {
 	font-weight: 600;
 	line-height: 25px;
 	width: 100%;
-	color: #6C7A89;
+	color: #336E7B;
 	text-align: left;
 	padding-left: 10px;
 	padding-right: 1px;
@@ -268,9 +268,7 @@ body {
 	font-weight: 400;
 	font-size: 12px;
 	margin: 0;
-	margin-right: 8px;
-	margin-left: 10px;
-	color: #6C7A89;
+	color: #336E7B;
 }
 
 #search-box > ul > li > img, #playlist-area > li > img {
@@ -347,7 +345,7 @@ body {
 
 .fui-search, .fui-clip {
 	font-size: 16px;
-	color: rgba(44, 62, 80, 0.4);
+	color: #336E7B;
 }
 
 .fui-plus, .fui-triangle-right-large, .fui-cross {
