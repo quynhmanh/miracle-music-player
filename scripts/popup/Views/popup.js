@@ -400,7 +400,7 @@ define(['underscore',
 										);
 										$('#search-box > ul > li', this.el).hover(
 											function(){
-												$('img', this).css('opacity', 0.2);
+												$('img', this).css('opacity', 0);
 
 											},
 											function(){
@@ -468,7 +468,7 @@ define(['underscore',
 
 						$('#playlist-area > li', this.el).hover(
 							function(){
-								$('img', this).css('opacity', 0.2);
+								$('img', this).css('opacity', 0);
 							},
 							function(){
 								$('img', this).css('opacity', 1);
