@@ -54,7 +54,7 @@ body {
 }
 
 #slider {
-	width: 42%;
+	width: 40%;
 	margin-top: 10px;
 	margin-right: -5px;
 	display: -webkit-inline-box;
@@ -109,7 +109,7 @@ body {
 	font-family: sans-serif;
 	display: inline;
 	color: #6C7A89;
-	margin-left: 4px;
+	margin-left: 10px;
 	margin-right: 1px;
 }
 
@@ -136,7 +136,7 @@ body {
 	background-color: white;
 	background-color:  rgba(255, 255, 255, 0.4);
 	height: 31px;
-	box-shadow: 4px 4px 2px -1px rgba(0, 0, 0, 0.15);
+	box-shadow: 4px 4px 2px -1px rgba(0, 0, 0, 0.07);
 }
 
 #controller > #btn {
@@ -164,10 +164,9 @@ body {
 #search-query-3 {
 	width: 100%;
 	border: none;
-	height: 33px;
+	height: 32px;
 	padding: 0 10px;
 	border-radius: 0;
-	background-color: #ecf0f1;	
 	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
 	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
 	box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
@@ -248,7 +247,7 @@ body {
 }
 
 #playlist-area::-webkit-scrollbar-thumb {
-    background-color: #89C4F4;
+    background-color: #5AC8FB;
     opacity: 0;
 }
 
@@ -270,9 +269,9 @@ body {
 	position: relative;
 }
 #playlist-area > li.playing {
-	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
-	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
-	box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
+	-webkit-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.5);
+	-moz-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.5);
+	box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.5);
 	background-color: #ecf0f1;
 	margin-bottom: 2px;
 	margin-top: 2px;
@@ -300,9 +299,9 @@ body {
 
 #search-box > ul > li:hover, #playlist-area > li:hover {
 	background-color: #ecf0f1;
-	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
-	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
-	box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
+	-webkit-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.5);
+	-moz-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.5);
+	box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.5);
 }
 
 #btn-search {
@@ -393,7 +392,9 @@ body {
 .fui-triangle-right-large {
 	margin-left: 242px;
 }
-
+.fui-triangle-right-large:hover {
+	color: #6BB9F0
+}
 .clearable{
   background: white url(data:image/gif;base64,R0lGODlhBwAHAIAAAP///5KSkiH5BAAAAAAALAAAAAAHAAcAAAIMTICmsGrIXnLxuDMLADs=) no-repeat right -20px center;
   border: 1px solid #999;

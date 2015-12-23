@@ -36,7 +36,6 @@ define(['underscore',
 			window.bg = this.bg;
 			this.db = new Database();
 			window.db = this.db;
-			this.showPlaylist();
 			this.addToPlaylistBackground();
 		},
 		
@@ -62,6 +61,7 @@ define(['underscore',
 			$('.fui-clip').click(function(){
 				$('#search-area').hide();
 				$('#playlist-area').toggle();
+				self.showPlaylist();
 			});
 		},
 		
@@ -344,8 +344,9 @@ define(['underscore',
 					self.searchList = [];
 					var searchList =  $('#search-list');
 					searchList.empty();
-					if (data.length === 0){
-						searchList.append("<li>Try again</li>");
+					console.log(data);
+					if (data['song']['list'].length === 0){
+						searchList.append("<li>Try again!</li>");
 						searchList.append("<li>Tips: Searching with both name and artist of the song</li>");
 					}
 					data = data['song']['list'];
