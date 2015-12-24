@@ -93,22 +93,22 @@ body {
 }
 
 #time {
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: 600;
-	font-family: sans-serif;
+	font-family: cursive;
 	display: inline;
 	color: #6C7A89;
-	margin-left: 7px;
+	margin-left: 9px;
 	margin-right: 6px;
 }
 
 #duration {
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: 600;
-	font-family: sans-serif;
+	font-family: cursive;
 	display: inline;
 	color: #6C7A89;
-	margin-left: 10px;
+	margin-left: 7px;
 	margin-right: 1px;
 }
 
@@ -132,7 +132,6 @@ body {
 
 #controller {
 	margin-top: 0px;
-	background-color: white;
 	background-color:  rgba(255, 255, 255, 0.4);
 	height: 31px;
 	box-shadow: 4px 4px 2px -1px rgba(0, 0, 0, 0.07);
@@ -404,3 +403,4 @@ body {
 .clearable.x  { background-position: right 5px center; }
 .clearable.onX{ cursor: pointer; }
 .clearable::-ms-clear {display: none; width:0; height:0;}
+
