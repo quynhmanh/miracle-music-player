@@ -33,9 +33,6 @@ define(['underscore',
 			}, 1000);
 			this.render();
 			this.renderTime();
-			window.bg = this.bg;
-			this.db = new Database();
-			window.db = this.db;
 			this.addToPlaylistBackground();
 		},
 		
@@ -125,7 +122,8 @@ define(['underscore',
 			var list = [];
 			list.push(data);
 			console.log(list);
-			bg.player.playlist(0, list).playCurrentSong();;
+			bg.player.playlist(0, list);
+			bg.player.set('singleSong', true);
 			this.btnPause();
 		},
 
@@ -134,6 +132,7 @@ define(['underscore',
 			var Id = e.currentTarget.getAttribute('data-nth');
 			var db = new Database();
 			var bg = chrome.extension.getBackgroundPage();
+			bg.player.set('singleSong', false);
 			bg.player.pauseCurrentSong();
 
 			db.request.onsuccess = function(){
@@ -143,6 +142,7 @@ define(['underscore',
 				var i = -1;
 				var callback = function(){
 					bg.player.playlist(i - 1, list);
+					console.log(bg.player.get('singleSong'));
 					self.showPlaylist();
 				}
 
@@ -162,6 +162,7 @@ define(['underscore',
 		},
 
 		addToPlaylistBackground: function(){
+			var bg = chrome.extension.getBackgroundPage();
 			var db = new Database();
 			db.request.onsuccess = function(){
 				var list = [];
@@ -259,6 +260,8 @@ define(['underscore',
 			var bg = chrome.extension.getBackgroundPage();
 			var list = bg.player.get('list');
 			var i = bg.player.get('i');
+			if (bg.player.get('singleSong'))
+				return false;
 			if (!list || list.length === 0)
 				return false;
 			var s = list[i];

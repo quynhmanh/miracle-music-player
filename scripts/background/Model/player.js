@@ -14,7 +14,8 @@ define([
 			state: false,
 			ns: false,
 			time: 0,
-			i: 0
+			i: 0,
+			singleSong: false
 		},
 		
 		initialize: function(){
@@ -31,7 +32,7 @@ define([
 					console.log(list);
 					this.set('list', list);
 					this.set('i', 0);
-					return;
+					return this;
 				}
 				var song = _list[this.get('i')];
 				// console.log(song);
@@ -49,13 +50,14 @@ define([
 					this.audio.currentTime = 0;
 					this.pauseCurrentSong();
 				}
-				return;
+				return this;
 			}
 			console.log(i);
 			console.log(list);
 			this.set('i', i);
 			this.set('list', list);
 			this.selectSong(list[i]).playCurrentSong();
+			return this;
 		},
 		
 		selectSong: function(data){

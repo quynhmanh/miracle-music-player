@@ -7,6 +7,9 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 
+@import url(https://fonts.googleapis.com/css?family=Cookie);
+
+
 body {
 	width: 360px;
 	padding: 0;
@@ -52,6 +55,11 @@ body {
 	margin-bottom: 0px;
 }
 
+#song-artist {
+	font-family: 'Cookie', cursive;
+	font-size: 14px;
+}
+
 #slider {
 	width: 40%;
 	margin-top: 10px;
@@ -95,7 +103,7 @@ body {
 #time {
 	font-size: 13px;
 	font-weight: 600;
-	font-family: cursive;
+	font-family: 'Cookie', cursive;
 	display: inline;
 	color: #6C7A89;
 	margin-left: 9px;
@@ -105,7 +113,7 @@ body {
 #duration {
 	font-size: 13px;
 	font-weight: 600;
-	font-family: cursive;
+	font-family: 'Cookie', cursive;
 	display: inline;
 	color: #6C7A89;
 	margin-left: 7px;
@@ -165,13 +173,14 @@ body {
 	height: 32px;
 	padding: 0 10px;
 	border-radius: 0;
+	background-color: rgba(255, 255, 255, 0.6);
 	-webkit-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
 	-moz-box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
 	box-shadow: 0px 0px 1px 1px rgba(102,102,102,0.3);
 }
 
 #search-query-3::-webkit-input-placeholder {
-	color: #CCCCCC;
+	color: #22313F;
     position:relative;
     padding-left:0;
     -webkit-transition: padding 0.5s;
@@ -255,7 +264,7 @@ body {
 
 
 #search-box > ul > li, #playlist-area > li {
-	font-size: 14px;
+	font-size: 15px;
 	font-weight: 600;
 	line-height: 25px;
 	width: 100%;
@@ -280,6 +289,7 @@ body {
 	font-size: 12px;
 	margin: 0;
 	color: #336E7B;
+	font-family: 'Cookie', cursive;
 }
 
 #search-box > ul > li > img, #playlist-area > li > img {
