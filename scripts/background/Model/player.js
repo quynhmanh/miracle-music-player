@@ -15,7 +15,7 @@ define([
 			ns: false,
 			time: 0,
 			i: 0,
-			singleSong: false
+			singleSong: true
 		},
 		
 		initialize: function(){

@@ -6,7 +6,7 @@ define(['underscore',
 		'player',
 		'songModel',
 		'database'
-], function(_, Backbone, Html, $, Moment, Player, Song, Database){
+], function(_, Backbone, Html, jQuery, Moment, Player, Song, Database){
 	var PopupView = Backbone.View.extend({
 		popupTemplate: _.template(Html),
 		
@@ -27,6 +27,7 @@ define(['underscore',
 			var background = chrome.extension.getBackgroundPage();
 			background.console.log(background.player);
 			this.bg = chrome.extension.getBackgroundPage();
+			this.db = new Database();
 			// console.log(this.bg.player);
 			interval = setInterval(function(){
 				self.renderTime();
@@ -34,6 +35,7 @@ define(['underscore',
 			this.render();
 			this.renderTime();
 			this.addToPlaylistBackground();
+			this.showPlaylist();
 		},
 		
 		el: '#main-container',
@@ -433,7 +435,7 @@ define(['underscore',
 		showPlaylist: function(){
 			var self = this;
 			$('#playlist-area').empty();
-
+			console.log("show playlist");
 			var db = new Database();
 			db.request.onsuccess = function(){
 				var objectStore = db.request.result.transaction("customers").objectStore("customers");
@@ -443,17 +445,17 @@ define(['underscore',
 						// console.log(cursor.value);
 						var song = cursor.value;
 						if (!self.isPlaying(song))
-							$('#playlist-area').append("<li class='track'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + cursor.value['Title'] + 
+							$('#playlist-area').append("<div class='item-wrapper'><li class='track item-container'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + (self.shorter(cursor.value['Title'], 25)) + 
 											  "<img src='" + cursor.value['Avatar'] + "'</img>" +
 											  "<p>" + cursor.value['Artist'] + "</p>" +
-											  "</li>");
+											  "</li><div class='drag-handle ui-draggable-handle'></div></div>");
 						else
-							$('#playlist-area').append("<li class='track playing'>" +
+							$('#playlist-area').append("<div class='item-wrapper'><li class='track playing item-container'>" +
 												"<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a>" +
 											  cursor.value['Title'] + 
 											  "<img src='" + cursor.value['Avatar'] + "'</img>" +
 											  "<p class=''>" + cursor.value['Artist'] + "</p>" +
-											  "</li>");
+											  "</li><div class='drag-handle ui-draggable-handle'></div></div>");
 						$('.track', this.el).hover(
 							function(){
 								$($(this)[0].children[0]).show();
@@ -469,7 +471,7 @@ define(['underscore',
 							}
 						)
 
-						$('#playlist-area > li', this.el).hover(
+						$('#playlist-area > div > li', this.el).hover(
 							function(){
 								$('img', this).css('opacity', 0);
 							},
@@ -479,7 +481,9 @@ define(['underscore',
 						);
 
 						cursor.continue();
-					} 
+					} else {
+						self.sortable();
+					}
 				}	
 
 			}
@@ -493,7 +497,80 @@ define(['underscore',
 		prevSong: function(){
 			var player = this.bg.player;
 			player.prevSong();
-		}
+		},
+
+		sortable: function(){
+
+		   var items = 4;
+
+		   function fixHelper( e, ui ) {
+
+		      	var $ctr = $(this);
+
+		      	ui.helper
+		        	.addClass('mx-state-moving ui-corner-all')
+		         	.outerWidth($ctr.outerWidth())
+		         	.find('.mx-content-hover')
+		            .removeClass('mx-content-hover')
+		        	.end();
+		   }
+
+		   function toggleHover( e ) {
+		      	if ( e.type == 'mouseenter' )
+		        	$(this).addClass( 'mx-content-hover hover' );
+		      	else
+		         	$(this).removeClass( 'mx-content-hover hover' );
+
+		   }
+
+		   sdCfg = {
+
+		        cursor: 'move',
+		        zIndex: 200,
+		        opacity: 0.75,
+		        handle: '.drag-handle',
+		        scroll: false,
+		        containment: 'window',
+		        appendTo: document.body,
+		        helper: 'clone',
+		        start: fixHelper
+
+		   };
+
+		$('.sort-container')
+		        .sortable({
+		         	axis: 'y',
+		            containment: 'parent',
+		            handle: '.item-container',
+		            tolerance: 'pointer',
+		            helper: 'clone',
+		            start: fixHelper,
+
+		            update: function ( e, ui ) {
+
+		     	        if ( ui.item.find('.drag-handle').length == 0 ) {
+
+		                    $('.drag-container .item-container').html('Item ' + (++items));
+
+		                    ui.item
+		                        .find('.item-container')
+		                        	.before( $('<div class="drag-handle">') )
+		                        	.parent()
+		                        .draggable(sdCfg)
+		                        .hover( toggleHover )
+		                        .find('.drag-handle')
+		                           	.hoverIntent( toggleHover );
+
+		                    $(this).sortable('option', 'containment', 'parent');
+		                  	}
+
+		               }
+		   			}).find('.item-wrapper')
+		        .draggable(sdCfg)
+		        .hover( toggleHover )
+		        .find('.drag-handle')
+		            .hoverIntent( toggleHover );
+				}
 	});
 	return PopupView;
 });

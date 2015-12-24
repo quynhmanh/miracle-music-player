@@ -263,7 +263,7 @@ body {
 }
 
 
-#search-box > ul > li, #playlist-area > li {
+#search-box > ul > li, #playlist-area > div > li {
 	font-size: 15px;
 	font-weight: 600;
 	line-height: 25px;
@@ -275,16 +275,16 @@ body {
 	z-index: 100;
 	position: relative;
 }
-#playlist-area > li.playing {
+#playlist-area > div > li.playing {
 	-webkit-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.3);
 	-moz-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.3);
 	box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.2);
-	background-color: rgba(255, 255, 255, 0.6);
+	background-color: rgba(255, 255, 255, 0.8);
 	margin-bottom: 2px;
 	margin-top: 2px;
 }
 
-#search-box > ul > li > p, #playlist-area > li > p {
+#search-box > ul > li > p, #playlist-area > div > li > p {
 	font-weight: 400;
 	font-size: 12px;
 	margin: 0;
@@ -292,7 +292,7 @@ body {
 	font-family: 'Cookie', cursive;
 }
 
-#search-box > ul > li > img, #playlist-area > li > img {
+#search-box > ul > li > img, #playlist-area > div > li > img {
 	margin-top: 3px;
 	margin-right: 5px;
 	padding: 0;
@@ -305,7 +305,14 @@ body {
 	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.95);
 }
 
-#search-box > ul > li:hover, #playlist-area > li:hover {
+#search-box > ul > li:hover, #playlist-area > div > li:hover {
+	background-color: rgba(255, 255, 255, 0.6);
+	-webkit-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.2);
+	-moz-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.2);
+	box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.2);
+}
+
+.hover {
 	background-color: rgba(255, 255, 255, 0.6);
 	-webkit-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.2);
 	-moz-box-shadow: 0px 1px 1px 1px rgba(102,102,102,0.2);
@@ -413,4 +420,6 @@ body {
 .clearable.x  { background-position: right 5px center; }
 .clearable.onX{ cursor: pointer; }
 .clearable::-ms-clear {display: none; width:0; height:0;}
+
+.sort-container .item-container { cursor: n-resize; }
 

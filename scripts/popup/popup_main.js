@@ -1,7 +1,7 @@
 require.config({
 	paths: {
 		jquery: "../jquery-1.11.3",
-//		jqueryui: "../jquery-ui.min",
+		jqueryui: "../jquery-ui.min",
 		flatui: "../flat-ui",
 		underscore: "../underscore-min",
 		backbone: "../backbone-min",
@@ -14,8 +14,8 @@ require.config({
 	}
 });
 
-require(['jquery', 'flatui', 'songModel', 'views/popup', 'playlist', 'player', 'database'], 
-	function($, $_, Song, PopupView, Playlist, Player, Database){
+require(['jquery', 'jqueryui','flatui', 'songModel', 'views/popup', 'playlist', 'player', 'database'], 
+	function($, $$, $_, Song, PopupView, Playlist, Player, Database){
 	
 		var MainView = new PopupView();
 
