@@ -5,7 +5,7 @@
 	
 	"version": "0.0.1",
 	
-	"description": "Search and play music instanly",
+	"description": "Search and play music conveniently. Easy usage and beautiful inteface.",
 	
 	"permissions": ["http://*.mp3.zing.vn/**/*", "<all_urls>", "tabs"],
 	
