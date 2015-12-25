@@ -25,9 +25,11 @@ define(['underscore',
 		initialize: function(){
 			var self = this;
 			var background = chrome.extension.getBackgroundPage();
-			background.console.log(background.player);
+			// background.console.log(background.player);
 			this.bg = chrome.extension.getBackgroundPage();
 			this.db = new Database();
+			window.db = this.db;
+			window.bg = this.bg;	
 			// console.log(this.bg.player);
 			interval = setInterval(function(){
 				self.renderTime();
@@ -36,6 +38,7 @@ define(['underscore',
 			this.renderTime();
 			this.addToPlaylistBackground();
 			this.showPlaylist();
+			this.updateDatabase();
 		},
 		
 		el: '#main-container',
@@ -87,7 +90,6 @@ define(['underscore',
 			}
 			
 			if (player.get('ns') === true){
-				console.log("ns");
 				this.showPlaylist();
 				player.set('ns', false);
 			}
@@ -143,6 +145,8 @@ define(['underscore',
 				var request2 = db.request.result.transaction("customers").objectStore("customers").openCursor();
 				var i = -1;
 				var callback = function(){
+					console.log(i);
+					console.log(list);
 					bg.player.playlist(i - 1, list);
 					console.log(bg.player.get('singleSong'));
 					self.showPlaylist();
@@ -193,6 +197,8 @@ define(['underscore',
 			$(e.currentTarget).hide();
 			var nth = e.currentTarget.getAttribute('data-nth');
 			var data = this.searchList[nth];
+			var num = this.db.get('num');
+			data['num'] = num + 1;
 			this.db.add(data);
 			this.showPlaylist();
 			this.addToPlaylistBackground();
@@ -240,11 +246,15 @@ define(['underscore',
 		
 		onPause: function(){
 			var bg = chrome.extension.getBackgroundPage();
+			if (bg.player.get('state'))
+				this.btnPlay();
 			bg.player.pauseCurrentSong();
 		},
 		
 		onResume: function(){
 			var bg = chrome.extension.getBackgroundPage();
+			if (bg.player.get('currentSong'))
+				this.btnPause();
 			if (!bg.player.get('currentSong')) return;
 			bg.player.playCurrentSong();
 		},
@@ -261,14 +271,14 @@ define(['underscore',
 		isPlaying: function(song){
 			var bg = chrome.extension.getBackgroundPage();
 			var list = bg.player.get('list');
-			var i = bg.player.get('i');
+			var id = bg.player.get('id');
 			if (bg.player.get('singleSong'))
 				return false;
 			if (!list || list.length === 0)
 				return false;
-			var s = list[i];
+			// var s = list[i];
 			// console.log(list);
-			if (s['Id'] === song['Id'] || s['Title'] === song['Title'])
+			if (id === song['Id'])
 				return true;
 			return false;
 		},
@@ -432,29 +442,31 @@ define(['underscore',
 			 else return s.substr(0, l) + '...';
 		},
 
-		showPlaylist: function(){
+		show: function(data) {
+
+			for (var i = 0; i < data.length; ++i)
+				for (var j = i + 1; j < data.length; ++j)
+					if (data[i]['num'] > data[j]['num']){
+						var tmp = data[i];
+						data[i] = data[j];
+						data[j] = tmp;
+					}
+
 			var self = this;
-			$('#playlist-area').empty();
-			console.log("show playlist");
-			var db = new Database();
-			db.request.onsuccess = function(){
-				var objectStore = db.request.result.transaction("customers").objectStore("customers");
-				objectStore.openCursor().onsuccess = function(event) {
-					var cursor = event.target.result;
-					if (cursor){
-						// console.log(cursor.value);
-						var song = cursor.value;
-						if (!self.isPlaying(song))
-							$('#playlist-area').append("<div class='item-wrapper'><li class='track item-container'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + (self.shorter(cursor.value['Title'], 25)) + 
-											  "<img src='" + cursor.value['Avatar'] + "'</img>" +
-											  "<p>" + cursor.value['Artist'] + "</p>" +
+			for (var i = 0; i < data.length; ++i){
+				var song = data[i];
+
+			if (!self.isPlaying(song))
+							$('#playlist-area').append("<div class='item-wrapper'><li class='track item-container'>" + "<a class='fui-cross song' href='#' data-nth='" + song['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + song['Id'] + "' href='#'></a>" + (self.shorter(song['Title'], 25)) + 
+											  "<img src='" + song['Avatar'] + "'</img>" +
+											  "<p>" + song['Artist'] + "</p>" +
 											  "</li><div class='drag-handle ui-draggable-handle'></div></div>");
 						else
 							$('#playlist-area').append("<div class='item-wrapper'><li class='track playing item-container'>" +
-												"<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a>" +
-											  cursor.value['Title'] + 
-											  "<img src='" + cursor.value['Avatar'] + "'</img>" +
-											  "<p class=''>" + cursor.value['Artist'] + "</p>" +
+												"<a class='fui-cross song' href='#' data-nth='" + song['Id'] + "'></a>" +
+											  song['Title'] + 
+											  "<img src='" + song['Avatar'] + "'</img>" +
+											  "<p class=''>" + song['Artist'] + "</p>" +
 											  "</li><div class='drag-handle ui-draggable-handle'></div></div>");
 						$('.track', this.el).hover(
 							function(){
@@ -479,9 +491,61 @@ define(['underscore',
 								$('img', this).css('opacity', 1);
 							}
 						);
+					}
+		},
+
+		showPlaylist: function(){
+			var self = this;
+			$('#playlist-area').empty();
+			var db = new Database();
+			var data = [];
+			db.request.onsuccess = function(){
+				var objectStore = db.request.result.transaction("customers").objectStore("customers");
+				objectStore.openCursor().onsuccess = function(event) {
+					var cursor = event.target.result;
+					if (cursor){
+						// console.log(cursor.value);
+						var song = cursor.value;
+						data.push(cursor.value);
+						// if (!self.isPlaying(song))
+						// 	$('#playlist-area').append("<div class='item-wrapper'><li class='track item-container'>" + "<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a><a href='#' class='fui-triangle-right-large musicPlaylist' data-nth='" + cursor.value['Id'] + "' href='#'></a>" + (self.shorter(cursor.value['Title'], 25)) + 
+						// 					  "<img src='" + cursor.value['Avatar'] + "'</img>" +
+						// 					  "<p>" + cursor.value['Artist'] + "</p>" +
+						// 					  "</li><div class='drag-handle ui-draggable-handle'></div></div>");
+						// else
+						// 	$('#playlist-area').append("<div class='item-wrapper'><li class='track playing item-container'>" +
+						// 						"<a class='fui-cross' href='#' data-nth='" + cursor.value['Id'] + "'></a>" +
+						// 					  cursor.value['Title'] + 
+						// 					  "<img src='" + cursor.value['Avatar'] + "'</img>" +
+						// 					  "<p class=''>" + cursor.value['Artist'] + "</p>" +
+						// 					  "</li><div class='drag-handle ui-draggable-handle'></div></div>");
+						// $('.track', this.el).hover(
+						// 	function(){
+						// 		$($(this)[0].children[0]).show();
+						// 		$($(this)[0].children[1]).show();
+						// 		$('p', this).show();
+						// 		$('img', this).show();
+						// 	}, 
+						// 	function(){
+						// 		$($(this)[0].children[0]).hide();
+						// 		$($(this)[0].children[1]).hide();
+						// 		$('p', this).show();
+						// 		$('img', this).show();
+						// 	}
+						// )
+
+						// $('#playlist-area > div > li', this.el).hover(
+						// 	function(){
+						// 		$('img', this).css('opacity', 0);
+						// 	},
+						// 	function(){
+						// 		$('img', this).css('opacity', 1);
+						// 	}
+						// );
 
 						cursor.continue();
 					} else {
+						self.show(data);
 						self.sortable();
 					}
 				}	
@@ -499,9 +563,52 @@ define(['underscore',
 			player.prevSong();
 		},
 
+		update: function(request, Id, i, songs, last) {
+			var self = this;
+			request.onsuccess = function() {
+				// console.log(request.result);
+				var song = request.result;
+				song['num'] = i;
+				var request2 = self.db.add(song, i);
+				// console.log(song);
+				songs.push(song);
+				if (i === last){
+					console.log(songs);
+					self.bg.player.set('list', songs);
+				}
+			}
+		},
+
+		updateDatabase: function(){
+			// var db = new Database();
+			// db.remove();
+			var self = this;
+			var data = $('.song');
+			var songs = [];
+			// console.log(data);
+
+			for (var i = 0; i < data.length; ++i){
+				var Id = data[i].getAttribute('data-nth');
+
+				var request = self.db.request.result.transaction("customers", "readwrite").objectStore("customers").get(Id);
+				self.update(request, Id, i, songs, data.length - 1);
+					
+			}
+			self.db.set('num', data.length - 1);
+			// console.log(songs);
+			// this.bg.player.set('list', songs);
+
+		},
+
 		sortable: function(){
 
+			var self = this;
+
 		   var items = 4;
+
+		   var setPadding = function(atHeight) {
+                rule.cssText = 'border-top-width: '+atHeight+'px'; 
+            };
 
 		   function fixHelper( e, ui ) {
 
@@ -512,7 +619,12 @@ define(['underscore',
 		         	.outerWidth($ctr.outerWidth())
 		         	.find('.mx-content-hover')
 		            .removeClass('mx-content-hover')
+		            .hide(300)
 		        	.end();
+		   }
+
+		   function changes(e, ui) {
+		   		$(ui.placeholder).hide().show(300);
 		   }
 
 		   function toggleHover( e ) {
@@ -527,7 +639,7 @@ define(['underscore',
 
 		        cursor: 'move',
 		        zIndex: 200,
-		        opacity: 0.75,
+		        opacity: 0.9,
 		        handle: '.drag-handle',
 		        scroll: false,
 		        containment: 'window',
@@ -542,10 +654,20 @@ define(['underscore',
 		         	axis: 'y',
 		            containment: 'parent',
 		            handle: '.item-container',
-		            tolerance: 'pointer',
-		            helper: 'clone',
+		            // tolerance: 'pointer',
+		            // helper: 'clone',
 		            start: fixHelper,
+		            cancel: "a",
+		            // cursor: "move",
+		            stop: function(ev, ui) {
+		                var next = ui.item.next();
+		                next.css({'-moz-transition':'none', '-webkit-transition':'none', 'transition':'none'});
+		                setTimeout(next.css.bind(next, {'-moz-transition':'border-top-width 0.1s ease-in', '-webkit-transition':'border-top-width 0.1s ease-in', 'transition':'border-top-width 0.1s ease-in'}));
 
+		                self.updateDatabase();
+		            },
+		            // change: changes,
+		            // scrollSensitivity: 10,
 		            update: function ( e, ui ) {
 
 		     	        if ( ui.item.find('.drag-handle').length == 0 ) {
@@ -568,8 +690,7 @@ define(['underscore',
 		   			}).find('.item-wrapper')
 		        .draggable(sdCfg)
 		        .hover( toggleHover )
-		        .find('.drag-handle')
-		            .hoverIntent( toggleHover );
+		        .find('.drag-handle');
 				}
 	});
 	return PopupView;

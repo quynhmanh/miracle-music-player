@@ -1,5 +1,9 @@
 define(['backbone'], function(Backbone){
 	var Database = Backbone.Model.extend({
+		defaults: {
+			num: 0
+		},
+
 		initialize: function() {
 			var self = this;
 			this.request = window.indexedDB.open("mmp-v2", 1);
@@ -38,18 +42,23 @@ define(['backbone'], function(Backbone){
 	        };     
 		},
 
-		add: function(song){
-			console.log(song);
+		add: function(song, i){
+			var self = this;
+			// console.log(song);
+			song['num'] = i;
+			this.set('num', song['num']);
 			var request = this.request.result.transaction(["customers"], "readwrite")
 		        .objectStore("customers")
-		        .add(song);
+		        .put(song);
 		                                 
 		    request.onsuccess = function(event) {
-		    	console.log("Added");
+		    	// console.log("Added");
+		    	// var arr = self.all;
+
 		    };
 		         
 		    request.onerror = function(event) {
-		    	console.log("Exist");
+		    	// console.log("Exist");
 		    }
 
 		},

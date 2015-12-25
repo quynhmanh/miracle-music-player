@@ -4,7 +4,6 @@ require.config({
 		underscore: "../underscore-min",
 		backbone: "../backbone-min",
 		player: "model/player",
-		database: "model/database",
 		song: "../common/song",
 		text: "../text"
 	}
@@ -13,9 +12,8 @@ require.config({
 require([
 	'jquery',
 	'player',
-	'song',
-	'database'
-], function($, Player, Song, Database){
+	'song'
+], function($, Player, Song){
 	
 	
 	window.player = new Player();
